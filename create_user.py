@@ -3,7 +3,9 @@ from PySide2 import *
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-
+# from PyQt5.QtWidgets import QMessageBox
+from db_handler import DBHandler
+from login_page import Ui_LoginWindow
 
 class Ui_CreateUserWindow(object):
     def setupUi(self, CreateUserWindow):
@@ -196,6 +198,7 @@ class Ui_CreateUserWindow(object):
         self.btn_save.setIcon(icon1)
         self.btn_save.setIconSize(QtCore.QSize(32, 32))
         self.btn_save.setObjectName("btn_save")
+        self.btn_save.clicked.connect(self.button_handler)
         self.horizontalLayout_2.addWidget(self.btn_save)
         self.btn_clear = QtWidgets.QPushButton(self.bottom_widget)
         font = QtGui.QFont()
@@ -210,6 +213,7 @@ class Ui_CreateUserWindow(object):
         self.btn_clear.setIcon(icon2)
         self.btn_clear.setIconSize(QtCore.QSize(32, 32))
         self.btn_clear.setObjectName("btn_clear")
+        self.btn_clear.clicked.connect(self.button_handler)
         self.horizontalLayout_2.addWidget(self.btn_clear)
         self.btn_cancel = QtWidgets.QPushButton(self.bottom_widget)
         font = QtGui.QFont()
@@ -224,6 +228,7 @@ class Ui_CreateUserWindow(object):
         self.btn_cancel.setIcon(icon3)
         self.btn_cancel.setIconSize(QtCore.QSize(32, 32))
         self.btn_cancel.setObjectName("btn_cancel")
+        self.btn_cancel.clicked.connect(self.cancel)
         self.horizontalLayout_2.addWidget(self.btn_cancel)
         self.verticalLayout_3.addWidget(self.bottom_widget, 0, QtCore.Qt.AlignBottom)
         CreateUserWindow.setCentralWidget(self.centralwidget)
@@ -233,8 +238,14 @@ class Ui_CreateUserWindow(object):
 
         self.retranslateUi(CreateUserWindow)
         QtCore.QMetaObject.connectSlotsByName(CreateUserWindow)
+    
+    def cancel(self,event):
+        print("Cancel")
+        # close intire window and open login window
+        event.accept()
+        self.login = Ui_LoginWindow()
+        self.login.show()
 
-        
 
     def retranslateUi(self, CreateUserWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -249,6 +260,12 @@ class Ui_CreateUserWindow(object):
         self.btn_clear.setText(_translate("CreateUserWindow", "CLEAR"))
         self.btn_cancel.setText(_translate("CreateUserWindow", "CANCEL"))
 
+        
+
+    def button_handler(self):
+        self.btn_save.clicked.connect(self.save)
+        self.btn_clear.clicked.connect(self.clear)
+
     def clear(self):
         self.txt_name.clear()
         self.txt_email.clear()
@@ -257,6 +274,7 @@ class Ui_CreateUserWindow(object):
         self.txt_password.clear()
 
     def save(self):
+        print("save")
         name = self.txt_name.text()
         email = self.txt_email.text()
         contact = self.txt_contact.text()
@@ -265,16 +283,18 @@ class Ui_CreateUserWindow(object):
 
         if name and email and contact and username and password != "":
             try:
-                query = "INSERT INTO users (name, email, contact, username, password) VALUES (?, ?, ?, ?, ?)"
-                cur.execute(query, (name, email, contact, username, password))
-                con.commit()
-                QMessageBox.information(self, "Info", "User has been created")
+                db=DBHandler()
+                db.insert("users", "name, email, contact, username, password", f"'{name}', '{email}', '{contact}', '{username}','{password}'")
+                db.close()
+                # successfull message box 
+                QMessageBox.information(self.centralwidget, "Info", "User has been created")
                 self.clear()
+                self.cancel()
             except:
-                QMessageBox.information(self, "Info", "User has not been created")
+                QMessageBox.information(self.centralwidget, "Info", "User has not been created")
         else:
             QMessageBox.information(self, "Info", "Fields cannot be empty")
-import resources_rc
+
 
 
 if __name__ == "__main__":

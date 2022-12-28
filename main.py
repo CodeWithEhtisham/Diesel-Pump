@@ -6,7 +6,8 @@ from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
 from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
 from PySide2.QtWidgets import *
-
+from db_handler import DBHandler
+from create_user import Ui_CreateUserWindow
 
 from main_window import Ui_MainWindow
 from splash_screen import Ui_SplashScreen
@@ -113,6 +114,15 @@ class SplashScreen(QMainWindow):
 
 
 if __name__ == "__main__":
+    db= DBHandler()
     app = QApplication(sys.argv)
-    window = SplashScreen()
-    sys.exit(app.exec_())
+    if not db.select_all("users", "*"):
+        # open create user window
+        CreateUserWindow = QtWidgets.QMainWindow()
+        ui = Ui_CreateUserWindow()
+        ui.setupUi(CreateUserWindow)
+        CreateUserWindow.show()
+        sys.exit(app.exec_())
+    else:
+        window = SplashScreen()
+        sys.exit(app.exec_())
