@@ -7,41 +7,13 @@ from PySide2.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTi
 from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
 from PySide2.QtWidgets import *
 from db_handler import DBHandler
-from create_user import Ui_CreateUserWindow
+from create_user import CreateUserWindow
 
-from main_window import Ui_MainWindow
+
 from splash_screen import Ui_SplashScreen
-
+from login_page import LoginWindow
 ## ==> GLOBALS
 counter = 0
-
-class MainWindow(QMainWindow):
-    def __init__(self):
-        QMainWindow.__init__(self)
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
-
-        # HOME PAGE BUTTON
-        self.ui.btn_home.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.home_page))
-
-        # HOME PAGE BUTTON
-        self.ui.btn_product.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.product_page))
-
-        # HOME PAGE BUTTON
-        self.ui.btn_sales.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.sales_page))
-
-        # CUSTOMER PAGE BUTTON
-        self.ui.btn_customer.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.customer_page))
-
-        # ROZNAMCHA PAGE BUTTON
-        self.ui.btn_roznamcha.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.roznamcha_page))
-
-        # SETTINGS PAGE BUTTON
-        self.ui.btn_settings.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.settings_page))
-
-        # ## SHOW ==> MAIN WINDOW
-        # ########################################################################
-        self.show
 
 class SplashScreen(QMainWindow):
     def __init__(self):
@@ -101,8 +73,15 @@ class SplashScreen(QMainWindow):
             self.timer.stop()
 
             # SHOW MAIN WINDOW
-            self.main = MainWindow()
-            self.main.show()
+            # self.main = MainWindow()
+            # self.main.show()
+            db= DBHandler()
+            if db.select_all("users",'*') == []:
+                self.create_user = CreateUserWindow()
+                self.create_user.show()
+            else:
+                self.login = LoginWindow()
+                self.login.show()
 
             # CLOSE SPLASH SCREEN
             self.close()
@@ -114,15 +93,6 @@ class SplashScreen(QMainWindow):
 
 
 if __name__ == "__main__":
-    db= DBHandler()
     app = QApplication(sys.argv)
-    if not db.select_all("users", "*"):
-        # open create user window
-        CreateUserWindow = QtWidgets.QMainWindow()
-        ui = Ui_CreateUserWindow()
-        ui.setupUi(CreateUserWindow)
-        CreateUserWindow.show()
-        sys.exit(app.exec_())
-    else:
-        window = SplashScreen()
-        sys.exit(app.exec_())
+    window = SplashScreen()
+    sys.exit(app.exec_())

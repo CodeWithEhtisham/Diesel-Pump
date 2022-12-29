@@ -3,7 +3,7 @@ import os
 
 class DBHandler:
     def __init__(self):
-        self.db_name = "db.sqlite"
+        self.db_name = "database/db.sqlite"
         if not os.path.isfile(self.db_name):
             # create db
             self.conn = sqlite3.connect(self.db_name)
@@ -44,5 +44,11 @@ class DBHandler:
 
     def close(self):
         self.conn.close()
+
+    def authenticate(self,username, password):
+        self.cursor.execute(f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'")
+        if self.cursor.fetchall():
+            return True
+        return False
 
     
