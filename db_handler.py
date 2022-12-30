@@ -11,6 +11,8 @@ class DBHandler:
             print(f"Database {self.db_name} created successfully")
             # id, name ,email,contact,username,password
             self.create_table("users", "id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, contact TEXT, username TEXT, password TEXT")
+            # self.create_table("business", "id INTEGER PRIMARY KEY AUTOINCREMENT, business_name TEXT, business_email TEXT, business_address TEXT, business_contact TEXT, business_owner TEXT")
+
 
         else:
             print(f"Database {self.db_name} already exists")
@@ -21,6 +23,12 @@ class DBHandler:
     def create_table(self, table_name, columns):
         self.cursor.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({columns})")
         self.conn.commit()
+
+    def check_table(self, table_name):
+        self.cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'")
+        if self.cursor.fetchall():
+            return True
+        return False
 
     def insert(self, table_name, columns, values):
         self.cursor.execute(f"INSERT INTO {table_name} ({columns}) VALUES ({values})")
@@ -34,8 +42,8 @@ class DBHandler:
         self.cursor.execute(f"SELECT {columns} FROM {table_name}")
         return self.cursor.fetchall()
 
-    def update(self, table_name, column, value, condition):
-        self.cursor.execute(f"UPDATE {table_name} SET {column} = {value} WHERE {condition}")
+    def update(self, table_name, columns, values, condition):
+        self.cursor.execute(f"UPDATE {table_name} SET {columns} = {values} WHERE {condition}")
         self.conn.commit()
 
     def delete(self, table_name, condition):
@@ -50,5 +58,6 @@ class DBHandler:
         if self.cursor.fetchall():
             return True
         return False
+
 
     

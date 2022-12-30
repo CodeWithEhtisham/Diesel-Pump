@@ -6,6 +6,13 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QApplication
 from db_handler import DBHandler
 import sys
+from create_business import NewBusinessWindow
+from update_business_details import UpdateBusinessWindow
+from update_user_details import UpdateUserWindow
+from update_password import ChangePasswordWindow
+from add_customer import AddCustomerWindow
+from add_product import AddProductWindow
+from add_stock import AddStockWindow
 from PyQt5.uic import loadUiType
 
 FORM_MAIN, _ = loadUiType('ui/main_window.ui')
@@ -15,18 +22,145 @@ class MainWindow(QMainWindow, FORM_MAIN):
     def __init__(self):
         QMainWindow.__init__(self)
         self.setupUi(self)
-        # home page show when window open
+        # home page show when window open on load
         self.Handle_Buttons()
     
     def Handle_Buttons(self):
-        self.btn_name.clicked.connet(self.home)
-    #     self.btn_save.clicked.connect(self.save_user)
-    #     self.btn_cancel.clicked.connect(self.close_window)
-    #     self.btn_clear.clicked.connect(self.clear_text)
+        self.btn_home.clicked.connect(self.home)
+        self.btn_product.clicked.connect(self.product)
+        self.btn_sales.clicked.connect(self.sales)
+        self.btn_customer.clicked.connect(self.customer)
+        self.btn_roznamcha.clicked.connect(self.roznamcha)
+        self.btn_settings.clicked.connect(self.settings)
+        self.btn_add_product.clicked.connect(self.add_product)
+        self.btn_add_stock.clicked.connect(self.add_stock)
+
+        # business btns
+        self.btn_business_details.clicked.connect(self.business_details)
+        self.btn_change_business_details.clicked.connect(self.edit_business)
+
+        # edit user details btns
+        self.btn_change_user_details.clicked.connect(self.change_user_details)
+        self.btn_change_pwd.clicked.connect(self.change_password)
+
+        # product qcombobox select value
+        self.select_product.currentIndexChanged.connect(self.product_search)
+
+
+
+        # main page
+        db= DBHandler()
+        data=db.select(table_name='business',columns="*",condition="id=1")
+        if data:
+            self.lbl_business_name.setText(data[0][1])
+            self.lbl_business_contact.setText(data[0][4])
+            self.lbl_business_address.setText(data[0][3])
+
+        data= db.select_all('products',"*")
+        if data:
+            for row in data:
+                print(row)
+                self.select_product.addItem(row[1])
+
+        # get all products with total stock
+        data = db.conn.execute("SELECT products.product_name, SUM(stock.stock),products.uom FROM products INNER JOIN stock ON products.product_id = stock.product_id GROUP BY products.product_name").fetchall()
+        for index,row in enumerate(data):
+            self.product_table.insertRow(index)
+            for i in row:
+                self.product_table.setItem(index,row.index(i),QTableWidgetItem(str(i)))
+
+        data = db.conn.execute("SELECT date,supplier,stock,rate,amount FROM stock").fetchall()
+        print(data)
+        for index,row in enumerate(data):
+            self.stock_table.insertRow(index)
+            for i in row:
+                self.stock_table.setItem(index,row.index(i),QTableWidgetItem(str(i)))
+
+    def product_search(self):
+        product=self.select_product.currentText()
+        # empty stock table 
+        self.stock_table.setRowCount(0)
+        db=DBHandler()
+        if product=="Select Product":
+            data = db.conn.execute("SELECT date,supplier,stock,rate,amount FROM stock").fetchall()
+            print('if')
+            for index,row in enumerate(data):
+                self.stock_table.insertRow(index)
+                for i in row:
+                    self.stock_table.setItem(index,row.index(i),QTableWidgetItem(str(i)))
+        else:
+            product_id=db.conn.execute(f"SELECT product_id FROM products WHERE product_name='{product}'").fetchone()[0]
+            data = db.conn.execute(f"SELECT date,supplier,stock,rate,amount FROM stock WHERE product_id={product_id}").fetchall()
+            print('else')
+            for index,row in enumerate(data):
+                self.stock_table.insertRow(index)
+                for i in row:
+                    self.stock_table.setItem(index,row.index(i),QTableWidgetItem(str(i)))
+
+
+    def add_product(self):
+        self.add_product_window = AddProductWindow()
+        self.add_product_window.show()
+
+    def add_stock(self):
+        self.add_stock_window = AddStockWindow()
+        self.add_stock_window.show()
+
+    
+    def change_user_details(self):
+        self.changeuserdetaisls = UpdateUserWindow()
+        self.changeuserdetaisls.show()
+
+    def change_password(self):
+        self.changepassword= ChangePasswordWindow()
+        self.changepassword.show()
+
+    def business_details(self):
+        self.business_details = NewBusinessWindow()
+        self.business_details.show()
+
+    def edit_business(self):
+        self.edit_business = UpdateBusinessWindow()
+        self.edit_business.show()
+
 
     def home(self):
-        self.homewindow =     
+        self.stackedWidget.setCurrentWidget(self.home_page)
         
+    def product(self):
+        self.stackedWidget.setCurrentWidget(self.product_page)
+
+    def sales(self):
+        self.stackedWidget.setCurrentWidget(self.sales_page)
+        
+
+    def customer(self):
+        self.stackedWidget.setCurrentWidget(self.customer_page)
+        
+
+    def roznamcha(self):
+        
+        self.stackedWidget.setCurrentWidget(self.roznamcha_page)
+
+    def settings(self):
+        self.stackedWidget.setCurrentWidget(self.settings_page)
+        db=DBHandler()
+        data=db.select_all('users',"*")[0]
+        print(data)
+        self.txt_user_name.setText(data[1])
+        self.txt_user_email.setText(data[2])
+        self.txt_user_contact.setText(data[3])
+        self.txt_user_username.setText(data[4])
+
+        data = db.select_all('business',"*")[0]
+        if data:
+            self.txt_business_name.setText(data[1])
+            self.txt_business_email.setText(data[2])
+            self.txt_business_contact.setText(data[4])
+            self.txt_business_address.setText(data[3])
+            self.txt_business_owner.setText(data[5])
+            self.btn_business_details.hide()
+
 
 def main():
     app = QApplication(sys.argv)
