@@ -12,8 +12,9 @@ class DBHandler:
             # id, name ,email,contact,username,password
             self.create_table("users", "id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, contact TEXT, username TEXT, password TEXT")
             # self.create_table("business", "id INTEGER PRIMARY KEY AUTOINCREMENT, business_name TEXT, business_email TEXT, business_address TEXT, business_contact TEXT, business_owner TEXT")
-
-
+            self.create_table(table_name="Customers", columns="custmer_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, vehicle TEXT, address TEXT, balance Integer")
+            self.create_table('business', 'id INTEGER PRIMARY KEY AUTOINCREMENT, business_name TEXT, business_email TEXT, business_address TEXT, business_contact TEXT, business_owner TEXT')
+            self.conn.execute('''CREATE TABLE stock ( id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, supplier TEXT, stock INTEGER, rate INTEGER, amount INTEGER, product_id INTEGER, FOREIGN KEY(product_id) REFERENCES products(product_id) )''')
         else:
             print(f"Database {self.db_name} already exists")
             self.conn = sqlite3.connect(self.db_name)
@@ -29,6 +30,7 @@ class DBHandler:
         if self.cursor.fetchall():
             return True
         return False
+
 
     def insert(self, table_name, columns, values):
         self.cursor.execute(f"INSERT INTO {table_name} ({columns}) VALUES ({values})")

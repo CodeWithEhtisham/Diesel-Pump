@@ -2452,6 +2452,19 @@
                     </column>
                     <column>
                       <property name="text">
+                        <string>Customer id.</string>
+                      </property>
+                      <property name="font">
+                        <font>
+                          <family>Calibri</family>
+                          <pointsize>14</pointsize>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                        </font>
+                      </property>
+                    </column>
+                    <column>
+                      <property name="text">
                         <string>Vehicle No.</string>
                       </property>
                       <property name="font">

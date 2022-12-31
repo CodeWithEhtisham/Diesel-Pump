@@ -21,14 +21,83 @@ class SalesWindow(QMainWindow, FORM_MAIN):
         QMainWindow.__init__(self)
         self.setupUi(self)
         self.Handle_Buttons()
+        self.update_sales()
+
+        self.select_product.activated.connect(self.get_product_info)
+        self.select_customer.activated.connect(self.get_customer_info)
+        self.txt_sale_date.setDate(QDate.currentDate())
+
+        self.txt_cash_paid.textChanged.connect(self.calculate_paid)
+        self.txt_cash_received.textChanged.connect(self.calculate_recieved)
+
+        self.txt_rate.textChanged.connect(self.calculate_total)
 
 
+    def calculate_total(self):
+        price= self.txt_rate.text()
+        quantity= self.txt_quantity.text()
+        if price and quantity:
+            total= int(price)*int(quantity)
+            self.txt_total_amount.setText(str(total))
+
+    def calculate_paid(self):
+        paid= self.txt_cash_paid.text()
+        recieved= self.txt_total_amount.text()
+        if paid and recieved:
+            cash= int(recieved)+int(paid)
+            self.lbl_sub_total.setText(str(cash))
+
+    def calculate_recieved(self):
+        paid= self.txt_cash_paid.text()
+        c= self.txt_total_amount.text()
+        total=int(paid)+int(c)
+        recieved= self.txt_cash_received.text()
+        if total and recieved:
+            cash= int(total)-int(recieved)
+            self.lbl_sub_total.setText(str(cash))
+
+    
+
+    def get_product_info(self):
+        db= DBHandler()
+        product_name= self.select_product.currentText()
+        data= db.select('products', 'product_id', f"product_name='{product_name}'")[0][0]
+        if data:
+            # get average price and sum of stock
+            price,stock=db.conn.execute("SELECT AVG(rate), SUM(stock) FROM stock WHERE product_id=?",(data,)).fetchall()[0]
+            if price:
+                self.txt_price.setText(str(int(price)))
+            else:
+                self.txt_price.setText('0')
+            if stock:
+                self.txt_stock.setText(str(int(stock)))
+            else:
+                self.txt_stock.setText('0')
+
+    def get_customer_info(self):
+        db= DBHandler()
+        customer_name= self.select_customer.currentText()
+        data= db.select('customers', '*', f"name='{customer_name}'")[0]
+        if data:
+            self.txt_name.setText(data[1])
+            self.txt_vehicle.setText(data[3])
+            self.txt_contact.setText(data[2])
+            self.txt_balance.setText(str(data[-1]))
+
+        
+        
+
+    def update_sales(self):
         db= DBHandler()
         data= db.select_all('products',"*")
         if data:
             for row in data:
-                print(row)
                 self.select_product.addItem(row[1])
+        data= db.select_all("customers","name")
+        print(data)
+        if data:
+            for row in data:
+                self.select_customer.addItem(row[0])
 
 
     def Handle_Buttons(self):
@@ -38,10 +107,34 @@ class SalesWindow(QMainWindow, FORM_MAIN):
         self.btn_cancel.clicked.connect(self.close)
 
     def add_sale(self):
-        pass
-
+        db= DBHandler()
+        product_name= self.select_product.currentText()
+        product_id= db.select('products', 'product_id', f"product_name='{product_name}'")[0][0]
+        customer_name= self.select_customer.currentText()
+        customer_id= db.select('customers', 'custmer_id', f"name='{customer_name}'")[0][0]
+        date= self.txt_sale_date.text()
+        quantity= self.txt_quantity.text()
+        rate= self.txt_rate.text()
+        total_amount= self.txt_total_amount.text()
+        cash_paid= self.txt_cash_paid.text()
+        cash_received= self.txt_cash_received.text()
+        total_sub= self.lbl_sub_total.text()
+        if product_name and customer_name and date and quantity and rate and total_amount and cash_paid and cash_received and total_sub:
+            db.conn.execute("CREATE TABLE IF NOT EXISTS sales (sale_id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER, customer_id INTEGER, date TEXT, quantity INTEGER, rate INTEGER, total_amount INTEGER, cash_paid INTEGER, cash_received INTEGER,  sub_total INTEGER, FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(customer_id) REFERENCES customers(customer_id))")
+            db.conn.execute("INSERT INTO sales (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received, sub_total) VALUES (?,?,?,?,?,?,?,?,?)",(product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received, total_sub))
+            db.conn.commit()
+            db.close()
+            self.close()
     def clear_fields(self):
-        pass
+        self.select_product.setCurrentIndex(0)
+        self.select_customer.setCurrentIndex(0)
+        self.txt_sale_date.setDate(QDate.currentDate())
+        self.txt_quantity.setText('')
+        self.txt_rate.setText('')
+        self.txt_total_amount.setText('00.00')
+        self.txt_cash_paid.setText('')
+        self.txt_cash_received.setText('')
+        self.lbl_sub_total.setText('00.00')
 
     def add_sale_print(self):
         pass

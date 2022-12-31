@@ -40,7 +40,9 @@ class AddProductWindow(QMainWindow, FORM_MAIN):
                     db.create_table('products', 'product_id INTEGER PRIMARY KEY AUTOINCREMENT, product_name TEXT, uom TEXT')
                 db.insert(table_name='products',columns='product_name, uom', values=f"'{product_name}', '{uom}'")
                 db.close()
-                self.Clear_Fields()
+                # self.Clear_Fields()
+                self.close()
+                
             except Exception:
                 QMessageBox.warning(self, "Warning", "Product has not been added")
     
