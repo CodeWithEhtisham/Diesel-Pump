@@ -212,7 +212,7 @@ QLineEdit {
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="txt_mobile">
+           <widget class="QLineEdit" name="txt_phone">
             <property name="font">
              <font>
               <family>Calibri</family>

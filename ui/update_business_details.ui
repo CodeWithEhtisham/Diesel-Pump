@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>NewBusinessWindow</class>
- <widget class="QMainWindow" name="NewBusinessWindow">
+ <class>UpdateBusinessWindow</class>
+ <widget class="QMainWindow" name="UpdateBusinessWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,21 +23,22 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Create Business</string>
+   <string>Update Business</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/icons/assets/icons/logo.png</normaloff>:/icons/assets/icons/logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
     <string notr="true">
 
 #label {
-	background-color: #80cbc4;
+	background-color: #00b8d4;
+color: #fff;
 }
 
-#label_5 {
-	color: #fff;
-}
-
-#btn_save {
+#btn_update {
 	background-color: #26a69a;
 	border-radius: 5px;
 	padding: 5px 0px;
@@ -80,7 +81,7 @@ QTextEdit {
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_3">
     <property name="spacing">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="leftMargin">
      <number>0</number>
@@ -105,7 +106,7 @@ QTextEdit {
        </font>
       </property>
       <property name="text">
-       <string>Business Details</string>
+       <string>Update Business Details</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -205,7 +206,7 @@ QTextEdit {
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QLineEdit" name="txt_name">
+           <widget class="QLineEdit" name="txt_business_name">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -227,7 +228,7 @@ QTextEdit {
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="txt_email">
+           <widget class="QLineEdit" name="txt_business_email">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -249,7 +250,7 @@ QTextEdit {
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="txt_contact">
+           <widget class="QLineEdit" name="txt_business_address">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -271,7 +272,7 @@ QTextEdit {
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="txt_username">
+           <widget class="QLineEdit" name="txt_business_contact">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -293,7 +294,7 @@ QTextEdit {
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="txt_password">
+           <widget class="QLineEdit" name="txt_business_owner">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -324,7 +325,7 @@ QTextEdit {
      <widget class="QWidget" name="bottom_widget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QPushButton" name="btn_save">
+        <widget class="QPushButton" name="btn_update">
          <property name="font">
           <font>
            <family>Calibri</family>
@@ -337,7 +338,7 @@ QTextEdit {
           <cursorShape>OpenHandCursor</cursorShape>
          </property>
          <property name="text">
-          <string>SAVE</string>
+          <string>UPDATE</string>
          </property>
          <property name="icon">
           <iconset resource="resources.qrc">
