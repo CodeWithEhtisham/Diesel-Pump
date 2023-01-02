@@ -37,6 +37,9 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.btn_add_stock.clicked.connect(self.add_stock)
         self.btn_add_customer.clicked.connect(self.add_customer)
         self.btn_add_sale.clicked.connect(self.add_sales)
+        # self.search_option_sale.activated.connect(self.)
+        self.txt_search_sale.textChanged.connect(self.sale_search_by_option)
+        self.btn_search_sale.clicked.connect(self.sale_search_by_date)
 
         # business btns
         self.btn_business_details.clicked.connect(self.business_details)
@@ -56,9 +59,44 @@ class MainWindow(QMainWindow, FORM_MAIN):
         # on date change event
         self.txt_date.dateChanged.connect(self.stock_search_by_date)
 
+    def sale_search_by_date(self):
+        from_date=self.txt_date_from_sale.date().toString("dd/MM/yyyy")
+        to_date=self.txt_date_to_sale.date().toString("dd/MM/yyyy")
+        db=DBHandler()
+        data=db.conn.execute(f"SELECT sales.date,customers.name,sales.quantity,sales.rate,sales.total_amount,sales.cash_paid,sales.cash_received,sales.sub_total FROM sales LEFT JOIN customers ON sales.customer_id=customers.custmer_id WHERE sales.date BETWEEN '{from_date}' AND '{to_date}'").fetchall()
+        self.sales_table.setRowCount(0)
+        for index,row in enumerate(data):
+            self.sales_table.insertRow(index)
+            for idx,i in enumerate(row):
+                self.sales_table.setItem(index,idx,QTableWidgetItem(str(i)))
+
+
+    def sale_search_by_option(self):
+        option=self.search_option_sale.currentText()
+        value=self.txt_search_sale.text()
+        if option=="Select Option":
+            QMessageBox.warning(self,"Error","Please Select Search Option")
+        elif option=="By Name":
+            db=DBHandler()
+            data=db.conn.execute(f"SELECT sales.date,customers.name,sales.quantity,sales.rate,sales.total_amount,sales.cash_paid,sales.cash_received,sales.sub_total FROM sales LEFT JOIN customers ON sales.customer_id=customers.custmer_id WHERE customers.name LIKE '%{value}%'").fetchall()
+            self.sales_table.setRowCount(0)
+            for index,row in enumerate(data):
+                self.sales_table.insertRow(index)
+                for idx,i in enumerate(row):
+                    self.sales_table.setItem(index,idx,QTableWidgetItem(str(i)))
+        elif option=="By Contact":
+            db=DBHandler()
+            data=db.conn.execute(f"SELECT sales.date,customers.name,sales.quantity,sales.rate,sales.total_amount,sales.cash_paid,sales.cash_received,sales.sub_total FROM sales LEFT JOIN customers ON sales.customer_id=customers.custmer_id WHERE customers.phone LIKE '%{value}%'").fetchall()
+            self.sales_table.setRowCount(0)
+            for index,row in enumerate(data):
+                self.sales_table.insertRow(index)
+                for idx,i in enumerate(row):
+                    self.sales_table.setItem(index,idx,QTableWidgetItem(str(i)))
+
+
     def add_sales(self):
         self.sale_window= SalesWindow()
-        self.sale_window.show
+        self.sale_window.show()
 
     def customer_search(self):
         option=self.search_option_customer.currentText()
@@ -153,6 +191,31 @@ class MainWindow(QMainWindow, FORM_MAIN):
         current_date=QDate.currentDate().toString("dd/MM/yyyy")
         data=db.conn.execute(f"SELECT AVG(rate) FROM stock WHERE date='{current_date}'").fetchone()[0]
         self.txt_average_price.setText(str(data))
+
+        # search all sales information with customer name
+        data= db.conn.execute("SELECT sales.date,customers.name,sales.quantity,sales.rate,sales.total_amount,sales.cash_paid,sales.cash_received,sales.sub_total FROM sales LEFT JOIN customers ON sales.customer_id=customers.custmer_id").fetchall()
+        # print(f"sales {data}")
+        self.sales_table.setRowCount(0)
+        total=0
+        cash_paid=0
+        cash_received=0
+        for index,row in enumerate(data):
+            self.sales_table.insertRow(index)
+            # print(row)
+            total+=row[4]
+            cash_paid+=row[5]
+            cash_received+=row[6]
+            for idx,i in enumerate(row):
+                # print(i)
+                self.sales_table.setItem(index,idx,QTableWidgetItem(str(i)))
+        
+        self.txt_total_sales.setText(str(total))
+        self.txt_total_cash_paid.setText(str(cash_paid))
+        self.txt_total_cash_received.setText(str(cash_received))
+        self.txt_date_from_sale.setDate(QDate.currentDate())
+        self.txt_date_to_sale.setDate(QDate.currentDate())
+
+    
 
     def update_customer_widget(self):
         db=DBHandler()
