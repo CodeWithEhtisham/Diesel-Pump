@@ -62,6 +62,7 @@ class RozNamchaWindow(QMainWindow, FORM_MAIN):
 
         if prodcut_id and customer_id and date and quantity and rate and total_amount and cash_paid and cash_received:
             db.conn.execute('INSERT INTO roznamcha (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received) VALUES (?,?,?,?,?,?,?,?)',(prodcut_id,customer_id,date,quantity,rate,total_amount,cash_paid,cash_received))
+            db.conn.commit()
             QMessageBox.information(self,'Success','Roznamcha Added Successfully')
             db.close()
             self.close()

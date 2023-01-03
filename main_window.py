@@ -24,6 +24,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
     def __init__(self):
         QMainWindow.__init__(self)
         self.setupUi(self)
+        self.update()
         # home page show when window open on load
         self.Handle_Buttons()
     
@@ -42,6 +43,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
         # self.search_option_sale.activated.connect(self.)
         self.txt_search_sale.textChanged.connect(self.sale_search_by_option)
         self.btn_search_sale.clicked.connect(self.sale_search_by_date)
+        self.btn_logout.clicked.connect(self.logout)
 
         # business btns
         self.btn_business_details.clicked.connect(self.business_details)
@@ -54,12 +56,50 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.btn_refresh_customer.clicked.connect(self.update_customer_widget)
         self.btn_search_customer.clicked.connect(self.customer_search)
 
-        self.update()
+
+        
         # product qcombobox select value
         self.select_product.activated.connect(self.stock_search)
         self.txt_date.setDate(QDate.currentDate())
         # on date change event
         self.txt_date.dateChanged.connect(self.stock_search_by_date)
+        self.txt_search_rn.textChanged.connect(self.search_roznamcha_by_name)
+        self.btn_search_rn.clicked.connect(self.search_roznamcha_by_date)
+        self.btn_refresh_rn.clicked.connect(self.update)
+
+    def logout(self):
+        from login_page import LoginWindow
+        self.login = LoginWindow()
+        self.login.show()
+        self.close()
+
+    def search_roznamcha_by_date(self):
+        from_date=self.txt_date_from_rn.date().toString("dd/MM/yyyy")
+        to_date=self.txt_date_to_rn.date().toString("dd/MM/yyyy")
+        db=DBHandler()
+        data=db.conn.execute(f"SELECT products.product_name,customers.name,date,quantity,rate,total_amount,cash_paid,cash_received FROM roznamcha LEFT JOIN customers ON roznamcha.customer_id=customers.custmer_id LEFT JOIN products ON roznamcha.product_id=products.product_id WHERE roznamcha.date BETWEEN '{from_date}' AND '{to_date}'").fetchall()
+        self.roznamcha_table.setRowCount(0)
+        for index,row in enumerate(data):
+                self.roznamcha_table.insertRow(index)
+                for idx,i in enumerate(row):
+                    self.roznamcha_table.setItem(index,idx,QTableWidgetItem(str(i)))
+
+
+
+    def search_roznamcha_by_name(self):
+        option=self.search_option_rn.currentText()
+        if option=="Select Option":
+            QMessageBox.warning(self,"Error","Please Select Search Option")
+        else:
+            value=self.txt_search_rn.text()
+            db=DBHandler()
+            data=db.conn.execute(f"SELECT products.product_name,customers.name,date,quantity,rate,total_amount,cash_paid,cash_received FROM roznamcha LEFT JOIN customers ON roznamcha.customer_id=customers.custmer_id LEFT JOIN products ON roznamcha.product_id=products.product_id Where customers.name LIKE '%{value}%'").fetchall()
+            self.roznamcha_table.setRowCount(0)
+            for index,row in enumerate(data):
+                self.roznamcha_table.insertRow(index)
+                for idx,i in enumerate(row):
+                    self.roznamcha_table.setItem(index,idx,QTableWidgetItem(str(i)))
+
 
     def add_roznamcha(self):
         self.roznamcha_window=RozNamchaWindow()
@@ -223,12 +263,19 @@ class MainWindow(QMainWindow, FORM_MAIN):
 
         data = db.conn.execute(f"SELECT products.product_name,customers.name,date,quantity,rate,total_amount,cash_paid,cash_received FROM roznamcha LEFT JOIN customers ON roznamcha.customer_id=customers.custmer_id LEFT JOIN products ON roznamcha.product_id=products.product_id ").fetchall()
         self.roznamcha_table.setRowCount(0)
-        print(data)
+        # print(data)
+        cash_paid=0
+        cash_received=0
         for index,row in enumerate(data):
             self.roznamcha_table.insertRow(index)
+            cash_paid+=row[-2]
+            cash_received+=row[-1]
             for idx,i in enumerate(row):
                 self.roznamcha_table.setItem(index,idx,QTableWidgetItem(str(i)))
-        
+        self.txt_date_to_rn.setDate(QDate.currentDate())
+        self.txt_date_from_rn.setDate(QDate.currentDate())
+        self.txt_total_cash_in.setText(str(cash_received))
+        self.txt_total_cash_out.setText(str(cash_paid))
 
 
 
