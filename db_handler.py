@@ -14,6 +14,8 @@ class DBHandler:
             # self.create_table("business", "id INTEGER PRIMARY KEY AUTOINCREMENT, business_name TEXT, business_email TEXT, business_address TEXT, business_contact TEXT, business_owner TEXT")
             self.create_table(table_name="Customers", columns="custmer_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, vehicle TEXT, address TEXT, balance Integer")
             self.create_table('business', 'id INTEGER PRIMARY KEY AUTOINCREMENT, business_name TEXT, business_email TEXT, business_address TEXT, business_contact TEXT, business_owner TEXT')
+            self.conn.execute("CREATE TABLE roznamcha (roznamcha_id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER, customer_id INTEGER, date TEXT, quantity INTEGER, rate INTEGER, total_amount INTEGER, cash_paid INTEGER, cash_received INTEGER, FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(customer_id) REFERENCES customers(custmer_id))")
+            self.conn.execute("CREATE TABLE IF NOT EXISTS sales (sale_id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER, customer_id INTEGER, date TEXT, quantity INTEGER, rate INTEGER, total_amount INTEGER, cash_paid INTEGER, cash_received INTEGER,  sub_total INTEGER, FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(customer_id) REFERENCES customers(customer_id))")
             self.conn.execute('''CREATE TABLE stock ( id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, supplier TEXT, stock INTEGER, rate INTEGER, amount INTEGER, product_id INTEGER, FOREIGN KEY(product_id) REFERENCES products(product_id) )''')
         else:
             print(f"Database {self.db_name} already exists")

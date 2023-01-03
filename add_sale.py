@@ -120,7 +120,6 @@ class SalesWindow(QMainWindow, FORM_MAIN):
         cash_received= self.txt_cash_received.text()
         total_sub= self.lbl_sub_total.text()
         if product_name and customer_name and date and quantity and rate and total_amount and cash_paid and cash_received and total_sub:
-            db.conn.execute("CREATE TABLE IF NOT EXISTS sales (sale_id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER, customer_id INTEGER, date TEXT, quantity INTEGER, rate INTEGER, total_amount INTEGER, cash_paid INTEGER, cash_received INTEGER,  sub_total INTEGER, FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(customer_id) REFERENCES customers(customer_id))")
             db.conn.execute("INSERT INTO sales (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received, sub_total) VALUES (?,?,?,?,?,?,?,?,?)",(product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received, total_sub))
             db.conn.commit()
             db.close()

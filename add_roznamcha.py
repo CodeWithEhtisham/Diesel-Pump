@@ -8,24 +8,72 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QApplication
+from db_handler import DBHandler
 
 import sys
 from os import path
 from PyQt5.uic import loadUiType
 
-FORM_MAIN, _ = loadUiType('create_user.ui')
+FORM_MAIN, _ = loadUiType('ui/add_roznamcha.ui')
 
 
-class CreateUserWindow(QMainWindow, FORM_MAIN):
+class RozNamchaWindow(QMainWindow, FORM_MAIN):
     def __init__(self):
         QMainWindow.__init__(self)
         self.setupUi(self)
-        # self.Handle_Buttons()
+        self.Handle_Buttons()
+
+        db=DBHandler()
+        self.select_product.addItems([i[0] for i in db.select_all('products','product_name')])
+        self.select_customer.addItems([i[0] for i in db.select_all('customers','name')])
+        self.txt_date.setDate(QDate.currentDate())
+
+    def Handle_Buttons(self):
+        self.btn_save.clicked.connect(self.add_roznamcha)
+        self.btn_clear.clicked.connect(self.clear_fields)
+        self.btn_cancel.clicked.connect(self.close)
+
+
+
+
+    def get_product_id(self,db,product_name):
+        return db.conn.execute("SELECT product_id FROM products WHERE product_name='{}'".format(product_name)).fetchone()[0]
+    
+    def get_customer_id(self,db,customer_name):
+        return db.conn.execute("SELECT custmer_id FROM customers WHERE name='{}'".format(customer_name)).fetchone()[0]
+        
+    
+    def add_roznamcha(self):
+        db=DBHandler()
+        prodcut_id = self.get_product_id(db,self.select_product.currentText())
+        customer_id = self.get_customer_id(db,self.select_customer.currentText())
+        date = self.txt_date.text()
+        quantity = int(self.txt_quantity.text())
+        rate = int(self.txt_rate.text())
+        total_amount = int(self.txt_total_amount.text())
+        cash_paid = int(self.txt_cash_paid.text())
+        cash_received = int(self.txt_cash_received.text())
+
+        if prodcut_id and customer_id and date and quantity and rate and total_amount and cash_paid and cash_received:
+            db.insert('INSERT INTO roznamcha (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received) VALUES (?,?,?,?,?,?,?,?)',(prodcut_id,customer_id,date,quantity,rate,total_amount,cash_paid,cash_received))
+            QMessageBox.information(self,'Success','Roznamcha Added Successfully')
+            db.close()
+            self.close()
+
+    def clear_fields(self):
+        self.txt_date.setDate(datetime.date.today())
+        self.select_product.setCurrentIndex(0)
+        self.txt_quantity.setText()
+        self.txt_rate.setText()
+        self.txt_total_amount.setText()
+        self.select_customer.setCurrentIndex(0)
+        self.txt_cash_paid.setText()
+        self.txt_cash_received.setText()
         
 
 def main():
     app = QApplication(sys.argv)
-    window = CreateUserWindow()
+    window = RozNamchaWindow()
     window.show()
     app.exec_()
 
