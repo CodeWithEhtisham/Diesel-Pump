@@ -14,6 +14,7 @@ from add_customer import AddCustomerWindow
 from add_product import AddProductWindow
 from add_stock import AddStockWindow
 from add_sale import SalesWindow
+from add_roznamcha import RozNamchaWindow
 from PyQt5.uic import loadUiType
 
 FORM_MAIN, _ = loadUiType('ui/main_window.ui')
@@ -37,6 +38,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.btn_add_stock.clicked.connect(self.add_stock)
         self.btn_add_customer.clicked.connect(self.add_customer)
         self.btn_add_sale.clicked.connect(self.add_sales)
+        self.btn_add_roznamcha.clicked.connect(self.add_roznamcha)
         # self.search_option_sale.activated.connect(self.)
         self.txt_search_sale.textChanged.connect(self.sale_search_by_option)
         self.btn_search_sale.clicked.connect(self.sale_search_by_date)
@@ -58,6 +60,10 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.txt_date.setDate(QDate.currentDate())
         # on date change event
         self.txt_date.dateChanged.connect(self.stock_search_by_date)
+
+    def add_roznamcha(self):
+        self.roznamcha_window=RozNamchaWindow()
+        self.roznamcha_window.show()
 
     def sale_search_by_date(self):
         from_date=self.txt_date_from_sale.date().toString("dd/MM/yyyy")
@@ -214,6 +220,18 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.txt_total_cash_received.setText(str(cash_received))
         self.txt_date_from_sale.setDate(QDate.currentDate())
         self.txt_date_to_sale.setDate(QDate.currentDate())
+
+        data = db.conn.execute(f"SELECT products.product_name,customers.name,date,quantity,rate,total_amount,cash_paid,cash_received FROM roznamcha LEFT JOIN customers ON roznamcha.customer_id=customers.custmer_id LEFT JOIN products ON roznamcha.product_id=products.product_id ").fetchall()
+        self.roznamcha_table.setRowCount(0)
+        print(data)
+        for index,row in enumerate(data):
+            self.roznamcha_table.insertRow(index)
+            for idx,i in enumerate(row):
+                self.roznamcha_table.setItem(index,idx,QTableWidgetItem(str(i)))
+        
+
+
+
 
     
 

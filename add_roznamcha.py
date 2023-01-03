@@ -28,13 +28,19 @@ class RozNamchaWindow(QMainWindow, FORM_MAIN):
         self.select_customer.addItems([i[0] for i in db.select_all('customers','name')])
         self.txt_date.setDate(QDate.currentDate())
 
+        self.txt_rate.textChanged.connect(self.calculate_total_amount)
+
     def Handle_Buttons(self):
         self.btn_save.clicked.connect(self.add_roznamcha)
         self.btn_clear.clicked.connect(self.clear_fields)
         self.btn_cancel.clicked.connect(self.close)
 
 
-
+    def calculate_total_amount(self):
+        quantity = int(self.txt_quantity.text())
+        rate = int(self.txt_rate.text())
+        total_amount = quantity * rate
+        self.txt_total_amount.setText(str(total_amount))
 
     def get_product_id(self,db,product_name):
         return db.conn.execute("SELECT product_id FROM products WHERE product_name='{}'".format(product_name)).fetchone()[0]
@@ -55,7 +61,7 @@ class RozNamchaWindow(QMainWindow, FORM_MAIN):
         cash_received = int(self.txt_cash_received.text())
 
         if prodcut_id and customer_id and date and quantity and rate and total_amount and cash_paid and cash_received:
-            db.insert('INSERT INTO roznamcha (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received) VALUES (?,?,?,?,?,?,?,?)',(prodcut_id,customer_id,date,quantity,rate,total_amount,cash_paid,cash_received))
+            db.conn.execute('INSERT INTO roznamcha (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received) VALUES (?,?,?,?,?,?,?,?)',(prodcut_id,customer_id,date,quantity,rate,total_amount,cash_paid,cash_received))
             QMessageBox.information(self,'Success','Roznamcha Added Successfully')
             db.close()
             self.close()
@@ -63,12 +69,12 @@ class RozNamchaWindow(QMainWindow, FORM_MAIN):
     def clear_fields(self):
         self.txt_date.setDate(datetime.date.today())
         self.select_product.setCurrentIndex(0)
-        self.txt_quantity.setText()
-        self.txt_rate.setText()
-        self.txt_total_amount.setText()
+        self.txt_quantity.setText('')
+        self.txt_rate.setText('')
+        self.txt_total_amount.setText('')
         self.select_customer.setCurrentIndex(0)
-        self.txt_cash_paid.setText()
-        self.txt_cash_received.setText()
+        self.txt_cash_paid.setText('')
+        self.txt_cash_received.setText('')
         
 
 def main():
