@@ -15,6 +15,7 @@ from add_product import AddProductWindow
 from add_stock import AddStockWindow
 from add_sale import SalesWindow
 from add_roznamcha import RozNamchaWindow
+from account_details import AccountDetailsWindow
 from PyQt5.uic import loadUiType
 
 FORM_MAIN, _ = loadUiType('ui/main_window.ui')
@@ -24,6 +25,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
     def __init__(self):
         QMainWindow.__init__(self)
         self.setupUi(self)
+        self.showMaximized()
         self.update()
         # home page show when window open on load
         self.Handle_Buttons()
@@ -44,6 +46,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.txt_search_sale.textChanged.connect(self.sale_search_by_option)
         self.btn_search_sale.clicked.connect(self.sale_search_by_date)
         self.btn_logout.clicked.connect(self.logout)
+        self.customer_table.doubleClicked.connect(self.customer_detail_widget)
 
         # business btns
         self.btn_business_details.clicked.connect(self.business_details)
@@ -72,6 +75,13 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.login = LoginWindow()
         self.login.show()
         self.close()
+
+    def customer_detail_widget(self):
+        # get row number and its value
+        row=self.customer_table.currentRow()
+        id=self.customer_table.item(row,0).text()
+        self.window = AccountDetailsWindow(id)
+        self.window.show()
 
     def search_roznamcha_by_date(self):
         from_date=self.txt_date_from_rn.date().toString("dd/MM/yyyy")

@@ -2352,6 +2352,12 @@
                 </item>
                 <item>
                   <widget class="QTableWidget" name="customer_table">
+                  <property name="font">
+                      <font>
+                        <family>Calibri</family>
+                        <pointsize>14</pointsize>
+                      </font>
+                    </property>
                     <property name="frameShape">
                       <enum>QFrame::Box</enum>
                     </property>
@@ -2395,7 +2401,7 @@
                       <number>20</number>
                     </property>
                     <attribute name="horizontalHeaderVisible">
-                      <bool>false</bool>
+                      <bool>true</bool>
                     </attribute>
                     <attribute name="horizontalHeaderCascadingSectionResizes">
                       <bool>true</bool>
@@ -2407,7 +2413,7 @@
                       <bool>true</bool>
                     </attribute>
                     <attribute name="verticalHeaderVisible">
-                      <bool>false</bool>
+                      <bool>true</bool>
                     </attribute>
                     <attribute name="verticalHeaderHighlightSections">
                       <bool>true</bool>
@@ -2440,7 +2446,7 @@
                     <row/>
                     <column>
                       <property name="text">
-                        <string>Customer Name</string>
+                        <string>Customer id.</string>
                       </property>
                       <property name="font">
                         <font>
@@ -2453,7 +2459,7 @@
                     </column>
                     <column>
                       <property name="text">
-                        <string>Customer id.</string>
+                        <string>Customer Name</string>
                       </property>
                       <property name="font">
                         <font>
@@ -2464,6 +2470,7 @@
                         </font>
                       </property>
                     </column>
+                    
                     <column>
                       <property name="text">
                         <string>Vehicle No.</string>
@@ -3116,7 +3123,7 @@ QPushButton, QComboBox, QDateEdit {
                       <number>20</number>
                     </property>
                     <attribute name="horizontalHeaderVisible">
-                      <bool>false</bool>
+                      <bool>true</bool>
                     </attribute>
                     <attribute name="horizontalHeaderCascadingSectionResizes">
                       <bool>false</bool>
@@ -3137,7 +3144,7 @@ QPushButton, QComboBox, QDateEdit {
                       <bool>false</bool>
                     </attribute>
                     <attribute name="verticalHeaderVisible">
-                      <bool>false</bool>
+                      <bool>true</bool>
                     </attribute>
                     <attribute name="verticalHeaderCascadingSectionResizes">
                       <bool>false</bool>
