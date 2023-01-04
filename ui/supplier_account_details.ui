@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1196</width>
+    <width>1193</width>
     <height>720</height>
    </rect>
   </property>
@@ -227,7 +227,7 @@ QLineEdit {
      <widget class="QWidget" name="accounts_upper_widget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QPushButton" name="btn_cash_received">
+        <widget class="QPushButton" name="btn_cash_paid">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -249,7 +249,7 @@ QLineEdit {
           </font>
          </property>
          <property name="text">
-          <string>Cash Received</string>
+          <string>Cash Paid</string>
          </property>
          <property name="icon">
           <iconset resource="../resources.qrc">
@@ -481,7 +481,7 @@ QLineEdit {
        <bool>false</bool>
       </attribute>
       <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>140</number>
+       <number>150</number>
       </attribute>
       <attribute name="horizontalHeaderHighlightSections">
        <bool>true</bool>
@@ -617,19 +617,6 @@ QLineEdit {
       </column>
       <column>
        <property name="text">
-        <string>Cash Received</string>
-       </property>
-       <property name="font">
-        <font>
-         <family>Calibri</family>
-         <pointsize>14</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-      </column>
-      <column>
-       <property name="text">
         <string>Remaining</string>
        </property>
        <property name="font">
@@ -721,6 +708,9 @@ QLineEdit {
             </property>
             <property name="text">
              <string>00</string>
+            </property>
+            <property name="margin">
+             <number>0</number>
             </property>
            </widget>
           </item>

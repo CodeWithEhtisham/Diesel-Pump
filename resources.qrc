@@ -1,7 +1,8 @@
 <RCC>
   <qresource prefix="icons">
-    <file>assets/icons/products.png</file>
+    <file>assets/icons/supplier.png</file>
     <file>assets/icons/print.png</file>
+    <file>assets/icons/products.png</file>
     <file>assets/icons/clear.png</file>
     <file>assets/icons/close.png</file>
     <file>assets/icons/create_user.png</file>

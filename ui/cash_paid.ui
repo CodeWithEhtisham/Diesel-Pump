@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>AddStockWindow</class>
- <widget class="QMainWindow" name="AddStockWindow">
+ <class>CashPaidWindow</class>
+ <widget class="QMainWindow" name="CashPaidWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,10 +23,10 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Add Stock</string>
+   <string>Cash Paid</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../resources.qrc">
+   <iconset>
     <normaloff>:/icons/assets/icons/logo.png</normaloff>:/icons/assets/icons/logo.png</iconset>
   </property>
   <property name="iconSize">
@@ -39,9 +39,6 @@
    <property name="styleSheet">
     <string notr="true">#label_widget {
 	background-color: #80cbc4;
-}
-
-#label_5 {
 	color: #fff;
 }
 
@@ -66,20 +63,13 @@
 	color: white;
 }
 
-QLineEdit, QDateEdit {
+QLineEdit, QDateEdit, QComboBox {
 	border-radius: 5px;
 	padding: 5px 5px;
 	border: 1px solid #81d4fa;
 }
 
- QComboBox {
-	border-radius: 5px;
-	padding: 5px 5px;
-	border: 1px solid #81d4fa;
-	font-size: 18px;
-}
-
-#txt_amount {
+#txt_name, #txt_previous, #txt_remaining {
 	background-color: #eee;
 	border: 1px solid #81d4fa;
 }</string>
@@ -114,7 +104,7 @@ QLineEdit, QDateEdit {
           </font>
          </property>
          <property name="text">
-          <string>Add Stock</string>
+          <string>Cash Paid</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -127,6 +117,21 @@ QLineEdit, QDateEdit {
     <item>
      <widget class="QWidget" name="details_widget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QFrame" name="lbl_frame">
          <property name="frameShape">
@@ -163,46 +168,20 @@ QLineEdit, QDateEdit {
            </widget>
           </item>
           <item>
+           <widget class="QLabel" name="lbl_payment_method">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Payment Method</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QLabel" name="lbl_supplier">
-            <property name="font">
-             <font>
-              <family>Calibri</family>
-              <pointsize>16</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>Supplier</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="lbl_stock">
-            <property name="font">
-             <font>
-              <family>Calibri</family>
-              <pointsize>16</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>Stock</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="lbl_rate">
-            <property name="font">
-             <font>
-              <family>Calibri</family>
-              <pointsize>16</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>Rate</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="lbl_amount">
             <property name="font">
              <font>
               <family>Calibri</family>
@@ -215,7 +194,7 @@ QLineEdit, QDateEdit {
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="lbl_paid_amount">
+           <widget class="QLabel" name="lbl_stock">
             <property name="font">
              <font>
               <family>Calibri</family>
@@ -223,7 +202,20 @@ QLineEdit, QDateEdit {
              </font>
             </property>
             <property name="text">
-             <string>Paid Amount</string>
+             <string>Previous</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lbl_rate">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Remaining</string>
             </property>
            </widget>
           </item>
@@ -240,11 +232,11 @@ QLineEdit, QDateEdit {
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QComboBox" name="select_product">
+           <widget class="QLineEdit" name="txt_name">
             <property name="minimumSize">
              <size>
               <width>300</width>
-              <height>35</height>
+              <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
@@ -255,10 +247,14 @@ QLineEdit, QDateEdit {
             </property>
             <property name="font">
              <font>
-              <pointsize>-1</pointsize>
+              <family>Calibri</family>
+              <pointsize>14</pointsize>
              </font>
             </property>
-            <property name="editable">
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
@@ -292,34 +288,7 @@ QLineEdit, QDateEdit {
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="select_supplier">
-            <property name="minimumSize">
-             <size>
-              <width>300</width>
-              <height>35</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>300</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>-1</pointsize>
-             </font>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="txt_stock">
-            <property name="minimumSize">
-             <size>
-              <width>300</width>
-              <height>0</height>
-             </size>
-            </property>
+           <widget class="QComboBox" name="comboBox">
             <property name="maximumSize">
              <size>
               <width>300</width>
@@ -332,38 +301,50 @@ QLineEdit, QDateEdit {
               <pointsize>14</pointsize>
              </font>
             </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="txt_rate">
-            <property name="minimumSize">
-             <size>
-              <width>300</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>300</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <family>Calibri</family>
-              <pointsize>14</pointsize>
-             </font>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
+            <item>
+             <property name="text">
+              <string>Cash</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Bank Transfer</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Cheque</string>
+             </property>
+            </item>
            </widget>
           </item>
           <item>
            <widget class="QLineEdit" name="txt_amount">
+            <property name="minimumSize">
+             <size>
+              <width>300</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>300</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="txt_previous">
             <property name="minimumSize">
              <size>
               <width>300</width>
@@ -391,7 +372,7 @@ QLineEdit, QDateEdit {
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="txt_paid_amount">
+           <widget class="QLineEdit" name="txt_remaining">
             <property name="minimumSize">
              <size>
               <width>300</width>
@@ -412,6 +393,9 @@ QLineEdit, QDateEdit {
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -438,7 +422,7 @@ QLineEdit, QDateEdit {
           <string>SAVE</string>
          </property>
          <property name="icon">
-          <iconset resource="../resources.qrc">
+          <iconset>
            <normaloff>:/icons/assets/icons/save.png</normaloff>:/icons/assets/icons/save.png</iconset>
          </property>
          <property name="iconSize">
@@ -463,7 +447,7 @@ QLineEdit, QDateEdit {
           <string>CLEAR</string>
          </property>
          <property name="icon">
-          <iconset resource="../resources.qrc">
+          <iconset>
            <normaloff>:/icons/assets/icons/clear.png</normaloff>:/icons/assets/icons/clear.png</iconset>
          </property>
          <property name="iconSize">
@@ -488,7 +472,7 @@ QLineEdit, QDateEdit {
           <string>CANCEL</string>
          </property>
          <property name="icon">
-          <iconset resource="../resources.qrc">
+          <iconset>
            <normaloff>:/icons/assets/icons/close.png</normaloff>:/icons/assets/icons/close.png</iconset>
          </property>
          <property name="iconSize">
@@ -507,7 +491,7 @@ QLineEdit, QDateEdit {
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
-  <include location="../resources.qrc"/>
+  <include location="resources.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -26,7 +26,7 @@
    <string>Sales Terminal</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
+   <iconset resource="../resources.qrc">
     <normaloff>:/icons/assets/icons/logo.png</normaloff>:/icons/assets/icons/logo.png</iconset>
   </property>
   <property name="layoutDirection">
@@ -48,6 +48,7 @@ QComboBox {
 	border-radius: 5px;
 	padding: 2px;
 	border: 1px solid  #81d4fa;
+	font-size: 18px;
 }
 
 QLineEdit {
@@ -320,10 +321,7 @@ QDateEdit {
                   </property>
                   <property name="font">
                    <font>
-                    <family>Calibri Light</family>
-                    <pointsize>14</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
+                    <pointsize>-1</pointsize>
                    </font>
                   </property>
                   <property name="toolTip">
@@ -348,7 +346,7 @@ QDateEdit {
                    </font>
                   </property>
                   <property name="text">
-                   <string>56514</string>
+                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -363,7 +361,7 @@ QDateEdit {
                    </font>
                   </property>
                   <property name="text">
-                   <string>1546</string>
+                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -514,7 +512,7 @@ QDateEdit {
                    </font>
                   </property>
                   <property name="text">
-                   <string>Walking-Customer</string>
+                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -529,7 +527,7 @@ QDateEdit {
                    </font>
                   </property>
                   <property name="text">
-                   <string>AB01</string>
+                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -544,7 +542,7 @@ QDateEdit {
                    </font>
                   </property>
                   <property name="text">
-                   <string>0000 0000000</string>
+                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -559,7 +557,7 @@ QDateEdit {
                    </font>
                   </property>
                   <property name="text">
-                   <string>0000</string>
+                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -799,10 +797,7 @@ QDateEdit {
                   </property>
                   <property name="font">
                    <font>
-                    <family>Calibri Light</family>
-                    <pointsize>14</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
+                    <pointsize>-1</pointsize>
                    </font>
                   </property>
                   <property name="editable">
@@ -959,7 +954,7 @@ QDateEdit {
                    </font>
                   </property>
                   <property name="text">
-                   <string>00</string>
+                   <string/>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1040,7 +1035,7 @@ QDateEdit {
                    </font>
                   </property>
                   <property name="text">
-                   <string>00</string>
+                   <string/>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1106,7 +1101,7 @@ QDateEdit {
           <string>CANCEL</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../resources.qrc">
            <normaloff>:/icons/assets/icons/close.png</normaloff>:/icons/assets/icons/close.png</iconset>
          </property>
          <property name="iconSize">
@@ -1146,7 +1141,7 @@ QDateEdit {
           <string>CLEAR</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../resources.qrc">
            <normaloff>:/icons/assets/icons/clear.png</normaloff>:/icons/assets/icons/clear.png</iconset>
          </property>
          <property name="iconSize">
@@ -1186,7 +1181,7 @@ QDateEdit {
           <string>SALE and PRINT</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../resources.qrc">
            <normaloff>:/icons/assets/icons/print.png</normaloff>:/icons/assets/icons/print.png</iconset>
          </property>
          <property name="iconSize">
@@ -1226,7 +1221,7 @@ QDateEdit {
           <string>SALE</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../resources.qrc">
            <normaloff>:/icons/assets/icons/save.png</normaloff>:/icons/assets/icons/save.png</iconset>
          </property>
          <property name="iconSize">
@@ -1245,7 +1240,7 @@ QDateEdit {
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../resources.qrc"/>
  </resources>
  <connections/>
 </ui>
