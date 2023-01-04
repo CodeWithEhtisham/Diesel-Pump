@@ -1054,7 +1054,7 @@
                  <number>180</number>
                 </attribute>
                 <attribute name="verticalHeaderVisible">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </attribute>
                 <attribute name="verticalHeaderCascadingSectionResizes">
                  <bool>false</bool>
@@ -2488,7 +2488,7 @@
            <number>20</number>
           </property>
           <attribute name="horizontalHeaderVisible">
-           <bool>false</bool>
+           <bool>true</bool>
           </attribute>
           <attribute name="horizontalHeaderCascadingSectionResizes">
            <bool>true</bool>
@@ -2500,7 +2500,7 @@
            <bool>true</bool>
           </attribute>
           <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
+           <bool>true</bool>
           </attribute>
           <attribute name="verticalHeaderHighlightSections">
            <bool>true</bool>
@@ -3209,7 +3209,7 @@ QPushButton, QComboBox, QDateEdit {
            <number>20</number>
           </property>
           <attribute name="horizontalHeaderVisible">
-           <bool>false</bool>
+           <bool>true</bool>
           </attribute>
           <attribute name="horizontalHeaderCascadingSectionResizes">
            <bool>false</bool>
@@ -3230,7 +3230,7 @@ QPushButton, QComboBox, QDateEdit {
            <bool>false</bool>
           </attribute>
           <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
+           <bool>true</bool>
           </attribute>
           <attribute name="verticalHeaderCascadingSectionResizes">
            <bool>false</bool>
@@ -3872,7 +3872,7 @@ QPushButton, QComboBox, QDateEdit {
            <number>20</number>
           </property>
           <attribute name="horizontalHeaderVisible">
-           <bool>false</bool>
+           <bool>true</bool>
           </attribute>
           <attribute name="horizontalHeaderCascadingSectionResizes">
            <bool>true</bool>
@@ -3884,7 +3884,7 @@ QPushButton, QComboBox, QDateEdit {
            <bool>true</bool>
           </attribute>
           <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
+           <bool>true</bool>
           </attribute>
           <attribute name="verticalHeaderHighlightSections">
            <bool>true</bool>
