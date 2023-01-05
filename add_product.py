@@ -36,8 +36,6 @@ class AddProductWindow(QMainWindow, FORM_MAIN):
         else:
             try:
                 db=DBHandler()
-                if not db.check_table('products'):
-                    db.create_table('products', 'product_id INTEGER PRIMARY KEY AUTOINCREMENT, product_name TEXT, uom TEXT')
                 db.insert(table_name='products',columns='product_name, uom', values=f"'{product_name}', '{uom}'")
                 db.close()
                 # self.Clear_Fields()

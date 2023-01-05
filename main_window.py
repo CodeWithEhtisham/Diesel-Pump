@@ -16,6 +16,9 @@ from add_stock import AddStockWindow
 from add_sale import SalesWindow
 from add_roznamcha import RozNamchaWindow
 from account_details import AccountDetailsWindow
+from supplier_account_details import SupplierAccountDetailsWindow
+from add_supplier import AddSupplierWindow
+from cash_paid import CashPaidWindow
 from PyQt5.uic import loadUiType
 
 FORM_MAIN, _ = loadUiType('ui/main_window.ui')
@@ -37,16 +40,19 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.btn_customer.clicked.connect(self.customer)
         self.btn_roznamcha.clicked.connect(self.roznamcha)
         self.btn_settings.clicked.connect(self.settings)
+        self.btn_supplier.clicked.connect(self.supplier)
         self.btn_add_product.clicked.connect(self.add_product)
         self.btn_add_stock.clicked.connect(self.add_stock)
         self.btn_add_customer.clicked.connect(self.add_customer)
         self.btn_add_sale.clicked.connect(self.add_sales)
         self.btn_add_roznamcha.clicked.connect(self.add_roznamcha)
+        self.btn_add_supplier.clicked.connect(self.add_supplier)
         # self.search_option_sale.activated.connect(self.)
         self.txt_search_sale.textChanged.connect(self.sale_search_by_option)
         self.btn_search_sale.clicked.connect(self.sale_search_by_date)
         self.btn_logout.clicked.connect(self.logout)
         self.customer_table.doubleClicked.connect(self.customer_detail_widget)
+        self.supplier_table.doubleClicked.connect(self.supplier_account_details)
 
         # business btns
         self.btn_business_details.clicked.connect(self.business_details)
@@ -59,7 +65,9 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.btn_refresh_customer.clicked.connect(self.update_customer_widget)
         self.btn_search_customer.clicked.connect(self.customer_search)
 
-
+        self.txt_search_supplier.textChanged.connect(self.supplier_search)
+        self.btn_refresh_supplier.clicked.connect(self.update)
+        
         
         # product qcombobox select value
         self.select_product.activated.connect(self.stock_search)
@@ -69,6 +77,33 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.txt_search_rn.textChanged.connect(self.search_roznamcha_by_name)
         self.btn_search_rn.clicked.connect(self.search_roznamcha_by_date)
         self.btn_refresh_rn.clicked.connect(self.update)
+        
+    def supplier_search(self):
+        option = self.search_option_supplier.currentText()
+        search = self.txt_search_supplier.text()
+        db=DBHandler()
+        if option == "By Name":
+            data=db.select(table_name='suppliers',columns='supplier_id,name,phone,address,balance',condition=f"name LIKE '%{search}%'")
+            self.update_table(data,self.supplier_table)
+        elif option=="By Contact":
+            data = db.select(table_name='suppliers',columns='supplier_id,name,phone,address,balance',condition=f"phone LIKE '%{search}%'")
+            self.update_table(data,self.supplier_table)
+        elif option == "By Address":
+            data = db.select(table_name='suppliers',columns='supplier_id,name,phone,address,balance',condition=f"address LIKE '%{search}%'")
+            self.update_table(data,self.supplier_table)
+        else:
+            # please select option 
+            QMessageBox.information(self,"Error","Please select option")
+
+    def supplier_account_details(self):
+        row=self.supplier_table.currentRow()
+        id=self.supplier_table.item(row,0).text()
+        self.window= SupplierAccountDetailsWindow(id)
+        self.window.show()
+
+    def add_supplier(self):
+        self.window = AddSupplierWindow()
+        self.window.show()
 
     def logout(self):
         from login_page import LoginWindow
@@ -203,7 +238,12 @@ class MainWindow(QMainWindow, FORM_MAIN):
                     self.stock_table.setItem(index,idx,QTableWidgetItem(str(i)))
 
         
-
+    def update_table(self,data,obj):
+        obj.setRowCount(0)
+        for index,row in enumerate(data):
+            obj.insertRow(index)
+            for idx,i in enumerate(row):
+                obj.setItem(index,idx,QTableWidgetItem(str(i)))
         # main page
     def update(self):
 
@@ -287,6 +327,12 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.txt_total_cash_in.setText(str(cash_received))
         self.txt_total_cash_out.setText(str(cash_paid))
 
+        # get supplier data
+        data = db.select_all(table_name="suppliers",columns="supplier_id,name,phone,address,balance")
+        self.update_table(data,self.supplier_table)
+        self.txt_total_supplier.setText(str(len(data)))
+        self.txt_supplier_total_rem_balance.setText(str(sum([float(i[-1]) for i in data])))
+
 
 
 
@@ -362,6 +408,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
 
     def home(self):
         self.stackedWidget.setCurrentWidget(self.home_page)
+        self.update()
         
     def product(self):
         self.stackedWidget.setCurrentWidget(self.product_page)
@@ -369,19 +416,25 @@ class MainWindow(QMainWindow, FORM_MAIN):
 
     def sales(self):
         self.stackedWidget.setCurrentWidget(self.sales_page)
+        self.update()
         
 
     def customer(self):
         self.stackedWidget.setCurrentWidget(self.customer_page)
         self.update_customer_widget()
-        
+        self.update()
+    
+    def supplier(self):
+        self.stackedWidget.setCurrentWidget(self.supplier_page)
+        self.update()
 
     def roznamcha(self):
-        
         self.stackedWidget.setCurrentWidget(self.roznamcha_page)
+        self.update()
 
     def settings(self):
         self.stackedWidget.setCurrentWidget(self.settings_page)
+        self.update()
         db=DBHandler()
         data=db.select_all('users',"*")[0]
         print(data)

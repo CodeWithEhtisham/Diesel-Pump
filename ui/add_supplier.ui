@@ -228,7 +228,7 @@ QComboBox {
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="txt_vehicle">
+           <widget class="QLineEdit" name="txt_address">
             <property name="font">
              <font>
               <family>Calibri</family>

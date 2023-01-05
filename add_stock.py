@@ -64,9 +64,6 @@ class AddStockWindow(QMainWindow, FORM_MAIN):
                 stock= int(stock)
                 rate= int(rate)
                 amount= int(amount)
-                if not db.check_table('stock'):
-                    db.conn.execute('''CREATE TABLE stock ( id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, supplier TEXT, stock INTEGER, rate INTEGER, amount INTEGER, product_id INTEGER, FOREIGN KEY(product_id) REFERENCES products(product_id) )''')
-                    db.conn.commit()
                 db.conn.execute('''INSERT INTO stock (date, supplier, stock, rate, amount, product_id) VALUES (?,?,?,?,?,?)''', (date, supplier, stock, rate, amount, self.get_product_id(product)))
                 db.conn.commit()
                 db.close()

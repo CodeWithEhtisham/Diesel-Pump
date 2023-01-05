@@ -288,7 +288,7 @@ QLineEdit, QDateEdit, QComboBox {
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox">
+           <widget class="QComboBox" name="payment_method">
             <property name="maximumSize">
              <size>
               <width>300</width>
