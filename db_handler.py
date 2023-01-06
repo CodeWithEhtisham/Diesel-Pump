@@ -9,22 +9,22 @@ class DBHandler:
             self.conn = sqlite3.connect(self.db_name)
             self.cursor = self.conn.cursor()
             print(f"Database {self.db_name} created successfully")
-            # id, name ,email,contact,username,password
-            self.create_table("users", "id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, contact TEXT, username TEXT, password TEXT")
-            # self.create_table("business", "id INTEGER PRIMARY KEY AUTOINCREMENT, business_name TEXT, business_email TEXT, business_address TEXT, business_contact TEXT, business_owner TEXT")
-            self.create_table(table_name="Customers", columns="custmer_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, vehicle TEXT, address TEXT, balance Integer")
-            self.create_table('business', 'id INTEGER PRIMARY KEY AUTOINCREMENT, business_name TEXT, business_email TEXT, business_address TEXT, business_contact TEXT, business_owner TEXT')
-            self.create_table('products', 'product_id INTEGER PRIMARY KEY AUTOINCREMENT, product_name TEXT, uom TEXT')
-            self.conn.execute("CREATE TABLE IF NOT EXISTS roznamcha (roznamcha_id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER, customer_id INTEGER, date TEXT, quantity INTEGER, rate INTEGER, total_amount INTEGER, cash_paid INTEGER, cash_received INTEGER, FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(customer_id) REFERENCES customers(custmer_id))")
-            self.conn.execute("CREATE TABLE IF NOT EXISTS sales (sale_id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER, customer_id INTEGER, date TEXT, quantity INTEGER, rate INTEGER, total_amount INTEGER, cash_paid INTEGER, cash_received INTEGER,  sub_total INTEGER, FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(customer_id) REFERENCES customers(customer_id))")
-            self.conn.execute("CREATE TABLE IF NOT EXISTS suppliers (supplier_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, address TEXT, balance_type TEXT, balance REAL)")
-            self.conn.execute('''CREATE TABLE IF NOT EXISTS stock ( id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, supplier TEXT, stock INTEGER, rate INTEGER, amount INTEGER, product_id INTEGER, FOREIGN KEY(product_id) REFERENCES products(product_id) )''')
-            self.conn.execute(f"CREATE TABLE IF NOT EXISTS supplier_cash_paid (id INTEGER PRIMARY KEY AUTOINCREMENT,supplier_id INTEGER,date TEXT,payment_method TEXT,cash_paid REAL,remaining REAL,description TEXT DEFAULT 'Cash Received',quantity INTEGER DEFAULT 0,rate REAL DEFAULT 0,amount REAL DEFAULT 0,FOREIGN KEY(supplier_id) REFERENCES suppliers(supplier_id))")
-
         else:
-            print(f"Database {self.db_name} already exists")
             self.conn = sqlite3.connect(self.db_name)
             self.cursor = self.conn.cursor()
+            print(f"Database {self.db_name} already exists")
+            
+        self.create_table("users", "id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, contact TEXT, username TEXT, password TEXT")
+        # self.create_table("business", "id INTEGER PRIMARY KEY AUTOINCREMENT, business_name TEXT, business_email TEXT, business_address TEXT, business_contact TEXT, business_owner TEXT")
+        self.create_table(table_name="Customers", columns="custmer_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, vehicle TEXT, address TEXT, balance Integer")
+        self.create_table('business', 'id INTEGER PRIMARY KEY AUTOINCREMENT, business_name TEXT, business_email TEXT, business_address TEXT, business_contact TEXT, business_owner TEXT')
+        self.create_table('products', 'product_id INTEGER PRIMARY KEY AUTOINCREMENT, product_name TEXT, uom TEXT')
+        self.conn.execute("CREATE TABLE IF NOT EXISTS roznamcha (roznamcha_id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER, customer_id INTEGER, date TEXT, quantity INTEGER, rate INTEGER, total_amount INTEGER, cash_paid INTEGER, cash_received INTEGER, FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(customer_id) REFERENCES customers(custmer_id))")
+        self.conn.execute("CREATE TABLE IF NOT EXISTS sales (sale_id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER, customer_id INTEGER, date TEXT, quantity INTEGER, rate INTEGER, total_amount INTEGER, cash_paid INTEGER, cash_received INTEGER,  sub_total INTEGER, FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(customer_id) REFERENCES customers(customer_id))")
+        self.conn.execute("CREATE TABLE IF NOT EXISTS suppliers (supplier_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, address TEXT, balance_type TEXT, balance REAL)")
+        self.conn.execute('''CREATE TABLE IF NOT EXISTS stock ( id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, supplier TEXT, stock INTEGER, rate INTEGER, amount INTEGER, product_id INTEGER, FOREIGN KEY(product_id) REFERENCES products(product_id) )''')
+        self.conn.execute(f"CREATE TABLE IF NOT EXISTS supplier_cash_paid (id INTEGER PRIMARY KEY AUTOINCREMENT,supplier_id INTEGER,date TEXT,payment_method TEXT,cash_paid REAL,remaining REAL,description TEXT DEFAULT 'Cash Received',quantity INTEGER DEFAULT 0,rate REAL DEFAULT 0,amount REAL DEFAULT 0,FOREIGN KEY(supplier_id) REFERENCES suppliers(supplier_id))")
+
 
 
     def create_table(self, table_name, columns):

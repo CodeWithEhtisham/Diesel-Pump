@@ -23,6 +23,7 @@ class CashPaidWindow(QMainWindow, FORM_MAIN):
         self.txt_name.setText(self.name)
         self.txt_previous.setText(str(self.balance))
         self.txt_amount.textChanged.connect(self.Calculate_Remaining)
+        self.txt_date.setDate(QDate.currentDate())
         self.Handle_Buttons()
 
     def Calculate_Remaining(self):
@@ -32,12 +33,17 @@ class CashPaidWindow(QMainWindow, FORM_MAIN):
             self.txt_remaining.setText('')
         else:
             try:
-                remaining = float(previous) - float(amount)
+                if float(previous)<=0:
+                    remaining = float(previous) + float(amount)
+                else:
+                    remaining = float(previous) - float(amount)
                 self.txt_remaining.setText(str(round(remaining,2)))
-            except:
+            except Exception as e:
+                print(f"Error: {e}")
                 self.txt_remaining.setText('')
 
     def Handle_Buttons(self):
+
         self.btn_save.clicked.connect(self.Save)
         self.btn_clear.clicked.connect(self.Clear)
         self.btn_cancel.clicked.connect(self.close)
@@ -60,6 +66,9 @@ class CashPaidWindow(QMainWindow, FORM_MAIN):
                 # db.conn.execute(f"CREATE TABLE IF NOT EXISTS supplier_cash_paid (id INTEGER PRIMARY KEY AUTOINCREMENT,supplier_id INTEGER,date TEXT,payment_method TEXT,cash_paid REAL,remaining REAL,description TEXT DEFAULT 'Cash Received',quantity INTEGER DEFAULT 0,rate REAL DEFAULT 0,amount REAL DEFAULT 0,FOREIGN KEY(supplier_id) REFERENCES suppliers(supplier_id))")
                 # db.conn.commit()
                 db.conn.execute(f"INSERT INTO supplier_cash_paid (supplier_id,date,payment_method,cash_paid,remaining) VALUES ({self.user_id},'{date}','{payment_method}',{amount},{remaining})")
+                db.conn.commit()
+                db.conn.execute(
+                    f"UPDATE suppliers SET balance = {remaining} WHERE supplier_id = {self.user_id}")
                 db.conn.commit()
                 QMessageBox.information(self, 'Success', 'Cash Paid Successfully')
                 self.Clear()

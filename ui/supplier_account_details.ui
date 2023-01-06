@@ -660,7 +660,7 @@ QLineEdit {
           <property name="spacing">
            <number>20</number>
           </property>
-          <item>
+          <!-- <item>
            <widget class="QLabel" name="lbl_total">
             <property name="font">
              <font>
@@ -674,7 +674,7 @@ QLineEdit {
              <string>Total</string>
             </property>
            </widget>
-          </item>
+          </item> -->
           <item alignment="Qt::AlignRight">
            <widget class="QLabel" name="label">
             <property name="font">
@@ -786,7 +786,7 @@ QLineEdit {
             </property>
            </widget>
           </item>
-          <item alignment="Qt::AlignRight">
+          <!-- <item alignment="Qt::AlignRight">
            <widget class="QLabel" name="lbl_cash_received">
             <property name="font">
              <font>
@@ -800,8 +800,8 @@ QLineEdit {
              <string>Cash Received :</string>
             </property>
            </widget>
-          </item>
-          <item alignment="Qt::AlignLeft">
+          </item> -->
+          <!-- <item alignment="Qt::AlignLeft">
            <widget class="QLabel" name="txt_total_cash_received">
             <property name="font">
              <font>
@@ -821,7 +821,7 @@ QLineEdit {
              <string>00</string>
             </property>
            </widget>
-          </item>
+          </item> -->
           <item alignment="Qt::AlignRight">
            <widget class="QLabel" name="lbl_remaining">
             <property name="font">
