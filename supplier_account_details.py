@@ -26,7 +26,7 @@ class SupplierAccountDetailsWindow(QMainWindow, FORM_MAIN):
         self.btn_search.clicked.connect(self.search_table_date)
         self.txt_search_date.setDate(QDate.currentDate())
         self.fill_table()
-        
+
         # self.Handle_Buttons()
     def search_table_date(self):
         self.txt_search_date.text()
@@ -76,6 +76,7 @@ class SupplierAccountDetailsWindow(QMainWindow, FORM_MAIN):
             self.supplier_account_table.insertRow(row_number)
             for column_number,valuess in enumerate(row_data):
                 self.supplier_account_table.setItem(row_number,column_number,QTableWidgetItem(str(valuess)))
+                # self.supplier_account_table.item(row_number,column_number).setForeground(QBrush(QColor(0, 255, 0)))
 
         self.txt_total_cash_paid.setText(str(cash_paid))
         self.txt_remaining.setText(str(remaining))

@@ -33,10 +33,10 @@ class CashPaidWindow(QMainWindow, FORM_MAIN):
             self.txt_remaining.setText('')
         else:
             try:
-                if float(previous)<=0:
+                if float(previous)>=0:
                     remaining = float(previous) + float(amount)
                 else:
-                    remaining = float(previous) - float(amount)
+                    remaining = float(amount)+float(previous)
                 self.txt_remaining.setText(str(round(remaining,2)))
             except Exception as e:
                 print(f"Error: {e}")
@@ -65,6 +65,8 @@ class CashPaidWindow(QMainWindow, FORM_MAIN):
                 # db.conn.execute(f"DROP TABLE IF EXISTS supplier_cash_paid")
                 # db.conn.execute(f"CREATE TABLE IF NOT EXISTS supplier_cash_paid (id INTEGER PRIMARY KEY AUTOINCREMENT,supplier_id INTEGER,date TEXT,payment_method TEXT,cash_paid REAL,remaining REAL,description TEXT DEFAULT 'Cash Received',quantity INTEGER DEFAULT 0,rate REAL DEFAULT 0,amount REAL DEFAULT 0,FOREIGN KEY(supplier_id) REFERENCES suppliers(supplier_id))")
                 # db.conn.commit()
+                
+
                 db.conn.execute(f"INSERT INTO supplier_cash_paid (supplier_id,date,payment_method,cash_paid,remaining) VALUES ({self.user_id},'{date}','{payment_method}',{amount},{remaining})")
                 db.conn.commit()
                 db.conn.execute(

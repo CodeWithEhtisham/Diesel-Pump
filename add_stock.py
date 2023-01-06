@@ -50,48 +50,63 @@ class AddStockWindow(QMainWindow, FORM_MAIN):
         if data:
             return data[0][0]
 
+    def get_supplier_id(self, supplier):
+        db= DBHandler()
+        data= db.select('suppliers', 'supplier_id', f"name='{supplier}'")
+        if data:
+            return data[0][0]
+
     def add_stock(self):
         db= DBHandler()
         product= self.select_product.currentText()
         date= self.txt_date.text()
-        supplier= self.txt_supplier.text()
-        stock= self.txt_stock.text()
-        rate= self.txt_rate.text()
-        amount= self.txt_amount.text()
+        supplier= self.select_supplier.currentText()
+        stock= int(self.txt_stock.text())
+        rate= float(self.txt_rate.text())
+        amount= float(self.txt_amount.text())
+        paid_amount= float(self.txt_paid_amount.text())
+        product_id= self.get_product_id(product)
+        supplier_id= self.get_supplier_id(supplier)
 
-        if product and date and supplier and stock and rate and amount != '':
+        if product and date and supplier and stock and rate and amount and paid_amount != '':
             try:
-                stock= int(stock)
-                rate= int(rate)
-                amount= int(amount)
-                db.conn.execute('''INSERT INTO stock (date, supplier, stock, rate, amount, product_id) VALUES (?,?,?,?,?,?)''', (date, supplier, stock, rate, amount, self.get_product_id(product)))
+                db= DBHandler()
+                db.insert('stock', f"product_id, date, supplier_id, stock, rate, amount, paid_amount", f"{product_id}, '{date}', {supplier_id}, {stock}, {rate}, {amount}, {paid_amount}")
+                # db.conn.execute("UPDATE products SET stock=stock+? WHERE product_id=?", (stock, product_id))
+                remaining_amount= db.select('supplier_cash_paid', 'remaining', f"supplier_id={supplier_id}")[-1][0]
+                if remaining_amount>=0:
+                    remaining_amount=-((float(amount)-float(paid_amount))-float(remaining_amount))
+                else:
+                    remaining_amount= float(amount)-float(paid_amount)+float(abs(remaining_amount))
+                db.conn.execute("UPDATE suppliers SET balance=? WHERE supplier_id=?", (remaining_amount, supplier_id))
+                db.conn.execute(f"INSERT into supplier_cash_paid (supplier_id, date, payment_method,cash_paid,remaining,description,quantity,rate,amount) values ({supplier_id},'{date}','Cash',{paid_amount},{remaining_amount},'Stock Purchase',{stock},{rate},{amount})")
                 db.conn.commit()
-                db.close()
-                self.close()
                 QMessageBox.information(self, 'Success', 'Stock added successfully')
                 self.close()
-                db.close()
             except Exception as e:
-                QMessageBox.warning(self, 'Error', f"stock, rate and amount must be integers {e}")
+                QMessageBox.warning(self, 'Error', f'Stock not added {e}')
         else:
             QMessageBox.warning(self, 'Error', 'All fields are required')
 
     def add_product(self):
         db= DBHandler()
-        data= db.select_all('products',"*")
+        data = db.select_all(table_name='products', columns='product_name')
         if data:
-            for row in data:
-                print(row)
-                self.select_product.addItem(row[1])
+            self.select_product.addItems([row[0] for row in data])
+
+        data = db.select_all(table_name='suppliers', columns='name')
+        if data:
+            self.select_supplier.addItems([row[0] for row in data])
 
 
     def clear_fields(self):
         self.add_product()
         self.txt_date.setDate(datetime.date.today())
-        self.txt_supplier.setText('')
+        self.select_supplier.setCurrentIndex(0)
         self.txt_stock.setText('')
         self.txt_rate.setText('')
         self.txt_amount.setText('')
+        self.txt_paid_amount.setText('')
 
         
 

@@ -18,7 +18,7 @@ from add_roznamcha import RozNamchaWindow
 from account_details import AccountDetailsWindow
 from supplier_account_details import SupplierAccountDetailsWindow
 from add_supplier import AddSupplierWindow
-from cash_paid import CashPaidWindow
+# from cash_paid import CashPaidWindow
 from PyQt5.uic import loadUiType
 
 FORM_MAIN, _ = loadUiType('ui/main_window.ui')
@@ -274,7 +274,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
             for i in row:
                 self.product_table.setItem(index,row.index(i),QTableWidgetItem(str(i)))
 
-        data = db.conn.execute("SELECT date,supplier,stock,rate,amount FROM stock").fetchall()
+        data = db.conn.execute("SELECT date,supplier_id,stock,rate,amount FROM stock").fetchall()
         # print(data)
         self.stock_table.setRowCount(0)
         for index,row in enumerate(data):
