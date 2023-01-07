@@ -37,23 +37,23 @@ class SalesWindow(QMainWindow, FORM_MAIN):
         price= self.txt_rate.text()
         quantity= self.txt_quantity.text()
         if price and quantity:
-            total= int(price)*int(quantity)
+            total= float(price)*float(quantity)
             self.txt_total_amount.setText(str(total))
 
     def calculate_paid(self):
         paid= self.txt_cash_paid.text()
         recieved= self.txt_total_amount.text()
         if paid and recieved:
-            cash= int(recieved)+int(paid)
+            cash= float(recieved)+float(paid)
             self.lbl_sub_total.setText(str(cash))
 
     def calculate_recieved(self):
         paid= self.txt_cash_paid.text()
         c= self.txt_total_amount.text()
-        total=int(paid)+int(c)
+        total=float(paid)+float(c)
         recieved= self.txt_cash_received.text()
         if total and recieved:
-            cash= int(total)-int(recieved)
+            cash= float(total)-float(recieved)
             self.lbl_sub_total.setText(str(cash))
 
     
@@ -61,16 +61,18 @@ class SalesWindow(QMainWindow, FORM_MAIN):
     def get_product_info(self):
         db= DBHandler()
         product_name= self.select_product.currentText()
-        data= db.select('products', 'product_id', f"product_name='{product_name}'")[0][0]
+        data,stock= db.select('products', 'product_id,product_stock', f"product_name='{product_name}'")[0]
+        print(data,stock)
         if data:
             # get average price and sum of stock
-            price,stock=db.conn.execute("SELECT AVG(rate), SUM(stock) FROM stock WHERE product_id=?",(data,)).fetchall()[0]
+            price=db.conn.execute("SELECT AVG(rate) FROM stock WHERE product_id=?",(data,)).fetchall()[0][0]
+            # stock=db.conn.execute("SELECT product_stock from products WHERE product_id=?",(data,)).fetchall()[0]
             if price:
-                self.txt_price.setText(str(int(price)))
+                self.txt_price.setText(str(price))
             else:
                 self.txt_price.setText('0')
             if stock:
-                self.txt_stock.setText(str(int(stock)))
+                self.txt_stock.setText(str(stock))
             else:
                 self.txt_stock.setText('0')
 
@@ -113,13 +115,39 @@ class SalesWindow(QMainWindow, FORM_MAIN):
         customer_name= self.select_customer.currentText()
         customer_id= db.select('customers', 'custmer_id', f"name='{customer_name}'")[0][0]
         date= self.txt_sale_date.text()
-        quantity= self.txt_quantity.text()
+        quantity= int(self.txt_quantity.text())
+        print(quantity)
         rate= self.txt_rate.text()
         total_amount= self.txt_total_amount.text()
         cash_paid= self.txt_cash_paid.text()
         cash_received= self.txt_cash_received.text()
         total_sub= self.lbl_sub_total.text()
+
+        # stock= db.select('stock', 'stock,stock_id', f"product_id='{product_id}'")
+        # if stock:
+        #     q=quantity
+        #     if sum([i[0] for i in stock]) > q:
+        #         for i in stock:
+        #             print(f"stock: {i[0]}")
+        #             print(f"q: {q}")
+        #             if i[0] > q:
+        #                 # update stock with respect to index
+        #                 db.conn.execute("UPDATE stock SET stock=? WHERE stock_id=?",(i[0]-q, i[1]))
+        #                 db.conn.commit()
+        #                 break
+
+        #             else:
+        #                 q-=i[0]
+        #                 db.conn.execute("UPDATE stock SET stock=? WHERE stock_id=?",(0, i[1]))
+        #                 db.conn.commit()
+
+        available_stock= db.select('products', 'product_stock', f"product_id='{product_id}'")[0][0]
+        if available_stock < quantity:
+            QMessageBox.warning(self, "Warning", "Stock is not available")
+            return
+
         if product_name and customer_name and date and quantity and rate and total_amount and cash_paid and cash_received and total_sub:
+            db.conn.execute("UPDATE products SET product_stock=product_stock-? WHERE product_id=?",(quantity, product_id))
             db.conn.execute("INSERT INTO sales (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received, sub_total) VALUES (?,?,?,?,?,?,?,?,?)",(product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received, total_sub))
             db.conn.commit()
             db.close()

@@ -31,13 +31,22 @@ class AddCustomerWindow(QMainWindow, FORM_MAIN):
         phone = self.txt_phone.text()
         vehicle = self.txt_vehicle.text()
         address = self.txt_address.text()
+        balance_type = self.balance_type.currentText()
         balance = self.txt_balance.text()
         if name and phone and vehicle and address and balance != "":
             try:
                 db=DBHandler()
-                if not db.check_table("Customers"):
-                    db.create_table(table_name="Customers", columns="custmer_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, vehicle TEXT, address TEXT, balance Integer")
-                db.insert(table_name="Customers", columns="name, phone, vehicle, address, balance", values=f"'{name}', '{phone}', '{vehicle}', '{address}', '{balance}'")
+                if balance_type == 'Cash In':
+                    balance = balance
+                else:
+                    balance = -balance
+
+                db.insert(table_name="Customers", columns="name, phone, vehicle, address, balance_type, balance",
+                    values=f"'{name}', '{phone}', '{vehicle}', '{address}', '{balance_type}', '{balance}'")
+
+                        # self.conn.execute(f"CREATE TABLE IF NOT EXISTS customer_cash_received (id INTEGER PRIMARY KEY AUTOINCREMENT,customer_id INTEGER,date TEXT,payment_method TEXT,cash_received REAL,remaining REAL,description TEXT DEFAULT 'Cash Received',quantity INTEGER DEFAULT 0,rate REAL DEFAULT 0,amount REAL DEFAULT 0,FOREIGN KEY(customer_id) REFERENCES customers(customer_id))")
+                db.conn.execute(f"INSERT INTO customer_cash_received (customer_id,date,payment_method,cash_received,remaining,description,quantity,rate,amount) VALUES ((SELECT customer_id FROM customers WHERE name='{name}'),'{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}','Cash','{balance}','{balance}','Cash Received',0,0,0)")
+                db.conn.commit()
                 QMessageBox.information(self, "Success", "Customer has been added")
                 db.close()
                 self.close()

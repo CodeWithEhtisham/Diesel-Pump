@@ -71,13 +71,16 @@ class AddStockWindow(QMainWindow, FORM_MAIN):
         if product and date and supplier and stock and rate and amount and paid_amount != '':
             try:
                 db= DBHandler()
+                db.conn.execute("UPDATE products SET product_stock=product_stock+? WHERE product_id=?", (stock, product_id))
+                db.conn.commit()
                 db.insert('stock', f"product_id, date, supplier_id, stock, rate, amount, paid_amount", f"{product_id}, '{date}', {supplier_id}, {stock}, {rate}, {amount}, {paid_amount}")
                 # db.conn.execute("UPDATE products SET stock=stock+? WHERE product_id=?", (stock, product_id))
                 remaining_amount= db.select('supplier_cash_paid', 'remaining', f"supplier_id={supplier_id}")[-1][0]
                 if remaining_amount>=0:
                     remaining_amount=-((float(amount)-float(paid_amount))-float(remaining_amount))
                 else:
-                    remaining_amount= float(amount)-float(paid_amount)+float(abs(remaining_amount))
+                    remaining_amount= -(float(amount)+abs(float(remaining_amount))-float(paid_amount))
+                    # remaining_amount= float(amount)-float(paid_amount)+float(abs(remaining_amount))
                 db.conn.execute("UPDATE suppliers SET balance=? WHERE supplier_id=?", (remaining_amount, supplier_id))
                 db.conn.execute(f"INSERT into supplier_cash_paid (supplier_id, date, payment_method,cash_paid,remaining,description,quantity,rate,amount) values ({supplier_id},'{date}','Cash',{paid_amount},{remaining_amount},'Stock Purchase',{stock},{rate},{amount})")
                 db.conn.commit()
