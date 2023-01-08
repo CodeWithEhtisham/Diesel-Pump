@@ -29,7 +29,7 @@ class SalesWindow(QMainWindow, FORM_MAIN):
 
         self.txt_cash_paid.textChanged.connect(self.calculate_paid)
         self.txt_cash_received.textChanged.connect(self.calculate_recieved)
-
+        # self.btn_save.clicked.connect(self.add_sale)
         self.txt_rate.textChanged.connect(self.calculate_total)
 
 
@@ -117,11 +117,11 @@ class SalesWindow(QMainWindow, FORM_MAIN):
         date= self.txt_sale_date.text()
         quantity= int(self.txt_quantity.text())
         print(quantity)
-        rate= self.txt_rate.text()
-        total_amount= self.txt_total_amount.text()
-        cash_paid= self.txt_cash_paid.text()
-        cash_received= self.txt_cash_received.text()
-        total_sub= self.lbl_sub_total.text()
+        rate= int(self.txt_rate.text())
+        total_amount= float(self.txt_total_amount.text())
+        cash_paid= float(self.txt_cash_paid.text())
+        cash_received= float(self.txt_cash_received.text())
+        total_sub= float(self.lbl_sub_total.text())
 
         # stock= db.select('stock', 'stock,stock_id', f"product_id='{product_id}'")
         # if stock:
@@ -146,12 +146,28 @@ class SalesWindow(QMainWindow, FORM_MAIN):
             QMessageBox.warning(self, "Warning", "Stock is not available")
             return
 
-        if product_name and customer_name and date and quantity and rate and total_amount and cash_paid and cash_received and total_sub:
+        if product_name != '' and customer_name != '' and date != '' and quantity != '' and rate != '' and total_amount != '' and cash_paid != '' and cash_received != '' and total_sub != '':
             db.conn.execute("UPDATE products SET product_stock=product_stock-? WHERE product_id=?",(quantity, product_id))
             db.conn.execute("INSERT INTO sales (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received, sub_total) VALUES (?,?,?,?,?,?,?,?,?)",(product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received, total_sub))
+            customer_remaining=float( db.select(table_name='customers', columns='balance', condition=f"custmer_id={customer_id}")[0][0])
+            if customer_remaining>=0 and total_sub>=0:
+                customer_remaining+=total_sub
+            elif customer_remaining<0 and total_sub>=0:
+                customer_remaining=customer_remaining+total_sub
+            elif customer_remaining>=0 and total_sub<0:
+                customer_remaining=customer_remaining+total_sub
+            elif customer_remaining<0 and total_sub<0:
+                customer_remaining=customer_remaining+total_sub
+
+            db.conn.execute("UPDATE customers SET balance=? WHERE custmer_id=?",(customer_remaining, customer_id))
+            db.conn.execute("INSERT INTO customer_cash_received (customer_id,date,description,quantity,rate,amount,cash_paid,cash_received,remaining) VALUES (?,?,?,?,?,?,?,?,?)",(customer_id, date, "Sale", quantity, rate, total_amount, cash_paid, cash_received, customer_remaining))
+
             db.conn.commit()
+            QMessageBox.information(self, "Success", "Sale added successfully")
             db.close()
             self.close()
+        else:
+            QMessageBox.warning(self, "Warning", "Fields are empty")
     def clear_fields(self):
         self.select_product.setCurrentIndex(0)
         self.select_customer.setCurrentIndex(0)

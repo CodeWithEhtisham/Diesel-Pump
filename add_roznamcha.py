@@ -47,6 +47,23 @@ class RozNamchaWindow(QMainWindow, FORM_MAIN):
     
     def get_customer_id(self,db,customer_name):
         return db.conn.execute("SELECT custmer_id FROM customers WHERE name='{}'".format(customer_name)).fetchone()[0]
+
+
+
+    def calculate_paid(self,paid,recieved):
+        if paid and recieved:
+            cash= float(recieved)+float(paid)
+            return cash
+
+    def calculate_recieved(self,paid,total_amount,recieved):
+        # paid= self.txt_cash_paid.text()
+        # total_amount= self.txt_total_amount.text()
+        total=float(paid)+float(total_amount)
+        # recieved= self.txt_cash_received.text()
+        if total and recieved:
+            cash= float(total)-float(recieved)
+            # self.lbl_sub_total.setText(str(cash))
+            return cash
         
     
     def add_roznamcha(self):
@@ -54,18 +71,35 @@ class RozNamchaWindow(QMainWindow, FORM_MAIN):
         prodcut_id = self.get_product_id(db,self.select_product.currentText())
         customer_id = self.get_customer_id(db,self.select_customer.currentText())
         date = self.txt_date.text()
-        quantity = int(self.txt_quantity.text())
-        rate = int(self.txt_rate.text())
-        total_amount = int(self.txt_total_amount.text())
-        cash_paid = int(self.txt_cash_paid.text())
-        cash_received = int(self.txt_cash_received.text())
+        quantity = float(self.txt_quantity.text())
+        rate = float(self.txt_rate.text())
+        total_amount = float(self.txt_total_amount.text())
+        cash_paid = float(self.txt_cash_paid.text())
+        cash_received = float(self.txt_cash_received.text())
+        sub_total= (total_amount)+(cash_paid)-(cash_received)
 
-        if prodcut_id and customer_id and date and quantity and rate and total_amount and cash_paid and cash_received:
+
+        if prodcut_id != '' and customer_id != '' and date != '' and quantity != '' and rate != '' and total_amount != '' and cash_paid != '' and cash_received != '':
             db.conn.execute('INSERT INTO roznamcha (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received) VALUES (?,?,?,?,?,?,?,?)',(prodcut_id,customer_id,date,quantity,rate,total_amount,cash_paid,cash_received))
+            customer_remaining = float(db.conn.execute("SELECT balance FROM customers WHERE custmer_id='{}'".format(customer_id)).fetchone()[0])
+
+            if customer_remaining>=0 and sub_total>=0:
+                customer_remaining+=sub_total
+            elif customer_remaining<0 and sub_total>=0:
+                customer_remaining=customer_remaining+sub_total
+            elif customer_remaining>=0 and sub_total<0:
+                customer_remaining=customer_remaining+sub_total
+            elif customer_remaining<0 and sub_total<0:
+                customer_remaining=customer_remaining+sub_total
+
+            db.conn.execute("UPDATE customers SET balance=? WHERE custmer_id=?",(customer_remaining,customer_id))
+            db.conn.execute(f"INSERT INTO customer_cash_received (customer_id,date,description,quantity,rate,amount,cash_paid,cash_received,remaining) VALUES (?,?,?,?,?,?,?,?,?)",(customer_id,date,'roznamcha',quantity,rate,total_amount,cash_paid,cash_received,customer_remaining))
             db.conn.commit()
             QMessageBox.information(self,'Success','Roznamcha Added Successfully')
             db.close()
             self.close()
+        else:
+            QMessageBox.information(self,'Error','Please Fill All The Fields')
 
     def clear_fields(self):
         self.txt_date.setDate(datetime.date.today())

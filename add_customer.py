@@ -37,15 +37,23 @@ class AddCustomerWindow(QMainWindow, FORM_MAIN):
             try:
                 db=DBHandler()
                 if balance_type == 'Cash In':
-                    balance = balance
+                    balance = float(balance)
+                    # db.insert(table_name="Customers", columns="name, phone, vehicle, address, balance_type, balance",
+                    # values=f"'{name}', '{phone}', '{vehicle}', '{address}', '{balance_type}', '{balance}'")
+
+                    #     # self.conn.execute(f"CREATE TABLE IF NOT EXISTS customer_cash_received (id INTEGER PRIMARY KEY AUTOINCREMENT,customer_id INTEGER,date TEXT,payment_method TEXT,cash_received REAL,remaining REAL,description TEXT DEFAULT 'Cash Received',quantity INTEGER DEFAULT 0,rate REAL DEFAULT 0,amount REAL DEFAULT 0,FOREIGN KEY(customer_id) REFERENCES customers(customer_id))")
+                    # db.insert(table_name="customer_cash_received", columns="customer_id, date, payment_method, remaining, description",values=f"'{db.cursor.lastrowid}', '{QDate.currentDate().toString('dd/MM/yyyy')}', 'Cash', '{balance}', '{balance}', 'Opening - {balance_type}'")
+                
                 else:
-                    balance = -balance
+                    balance = -float(balance)
 
                 db.insert(table_name="Customers", columns="name, phone, vehicle, address, balance_type, balance",
-                    values=f"'{name}', '{phone}', '{vehicle}', '{address}', '{balance_type}', '{balance}'")
+                values=f"'{name}', '{phone}', '{vehicle}', '{address}', '{balance_type}', '{balance}'")
 
-                        # self.conn.execute(f"CREATE TABLE IF NOT EXISTS customer_cash_received (id INTEGER PRIMARY KEY AUTOINCREMENT,customer_id INTEGER,date TEXT,payment_method TEXT,cash_received REAL,remaining REAL,description TEXT DEFAULT 'Cash Received',quantity INTEGER DEFAULT 0,rate REAL DEFAULT 0,amount REAL DEFAULT 0,FOREIGN KEY(customer_id) REFERENCES customers(customer_id))")
-                db.insert(table_name="customer_cash_received", columns="customer_id, date, payment_method, cash_received, remaining, description, quantity, rate, amount",values=f"'{db.cursor.lastrowid}', '{datetime.datetime.now().strftime('%Y-%m-%d')}', 'Cash', '{balance}', '{balance}', 'Opening - {balance_type}', 0, 0, 0")
+                    # self.conn.execute(f"CREATE TABLE IF NOT EXISTS customer_cash_received (id INTEGER PRIMARY KEY AUTOINCREMENT,customer_id INTEGER,date TEXT,payment_method TEXT,cash_received REAL,remaining REAL,description TEXT DEFAULT 'Cash Received',quantity INTEGER DEFAULT 0,rate REAL DEFAULT 0,amount REAL DEFAULT 0,FOREIGN KEY(customer_id) REFERENCES customers(customer_id))")
+                db.insert(table_name="customer_cash_received", columns="customer_id, date, payment_method, remaining, description",values=f"'{db.cursor.lastrowid}', '{QDate.currentDate().toString('dd/MM/yyyy')}', 'Cash', '{balance}', 'Opening - {balance_type}'")
+                
+
                 db.conn.commit()
                 QMessageBox.information(self, "Success", "Customer has been added")
                 db.close()

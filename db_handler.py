@@ -24,7 +24,7 @@ class DBHandler:
         self.conn.execute("CREATE TABLE IF NOT EXISTS suppliers (supplier_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, address TEXT, balance_type TEXT, balance REAL)")
         self.conn.execute('''CREATE TABLE IF NOT EXISTS stock(stock_id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER, date TEXT, supplier_id INTEGER, stock INTEGER, rate REAL, amount REAL, paid_amount REAL, FOREIGN KEY(product_id) REFERENCES products(product_id), FOREIGN KEY(supplier_id) REFERENCES suppliers(supplier_id))''')
         self.conn.execute(f"CREATE TABLE IF NOT EXISTS supplier_cash_paid (id INTEGER PRIMARY KEY AUTOINCREMENT,supplier_id INTEGER,date TEXT,payment_method TEXT,cash_paid REAL,remaining REAL,description TEXT DEFAULT 'Cash Paid',quantity INTEGER DEFAULT 0,rate REAL DEFAULT 0,amount REAL DEFAULT 0,FOREIGN KEY(supplier_id) REFERENCES suppliers(supplier_id))")
-        self.conn.execute(f"CREATE TABLE IF NOT EXISTS customer_cash_received (id INTEGER PRIMARY KEY AUTOINCREMENT,customer_id INTEGER,date TEXT,payment_method TEXT,cash_received REAL,remaining REAL,description TEXT DEFAULT 'Cash Received',quantity INTEGER DEFAULT 0,rate REAL DEFAULT 0,amount REAL DEFAULT 0,FOREIGN KEY(customer_id) REFERENCES customers(customer_id))")
+        self.conn.execute(f"CREATE TABLE IF NOT EXISTS customer_cash_received (id INTEGER PRIMARY KEY AUTOINCREMENT,customer_id INTEGER,date TEXT,payment_method TEXT,cash_received REAL DEFAULT 0,remaining REAL,description TEXT DEFAULT 'Cash Received',quantity INTEGER DEFAULT 0,rate REAL DEFAULT 0,amount REAL DEFAULT 0,cash_paid REAL DEFAULT 0,FOREIGN KEY(customer_id) REFERENCES customers(customer_id))")
 
 
 

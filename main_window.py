@@ -77,6 +77,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.txt_search_rn.textChanged.connect(self.search_roznamcha_by_name)
         self.btn_search_rn.clicked.connect(self.search_roznamcha_by_date)
         self.btn_refresh_rn.clicked.connect(self.update)
+        self.btn_refresh_sale.clicked.connect(self.update)
         
     def supplier_search(self):
         option = self.search_option_supplier.currentText()
@@ -220,7 +221,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
         db=DBHandler()
         if product=="Select Product":
             print(date)
-            data = db.conn.execute(f'SELECT date,supplier,stock,rate,amount FROM stock WHERE date="{date}"').fetchall()
+            data = db.conn.execute(f"SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id WHERE date='{date}'").fetchall()
             print('if',data)
             for index,row in enumerate(data):
                 self.stock_table.insertRow(index)
@@ -229,7 +230,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
                     self.stock_table.setItem(index,idx,QTableWidgetItem(str(i)))
         else:
             product_id=db.conn.execute(f"SELECT product_id FROM products WHERE product_name='{product}'").fetchone()[0]
-            data = db.conn.execute(f"SELECT date,supplier,stock,rate,amount FROM stock WHERE date='{date}' and product_id={product_id}").fetchall()
+            data = db.conn.execute(f"SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id  WHERE date='{date}' and product_id={product_id}").fetchall()
             print('else')
             for index,row in enumerate(data):
                 self.stock_table.insertRow(index)
@@ -274,7 +275,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
             for i in row:
                 self.product_table.setItem(index,row.index(i),QTableWidgetItem(str(i)))
 
-        data = db.conn.execute("SELECT date,supplier_id,stock,rate,amount FROM stock").fetchall()
+        data = db.conn.execute("SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id").fetchall()
         # print(data)
         self.stock_table.setRowCount(0)
         for index,row in enumerate(data):
@@ -285,6 +286,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
                 self.stock_table.setItem(index,idx,QTableWidgetItem(str(i)))
         # calculate today avg rate of stock
         current_date=QDate.currentDate().toString("dd/MM/yyyy")
+        previous_date=QDate.currentDate().addDays(-2).toString("dd/MM/yyyy")
         data=db.conn.execute(f"SELECT AVG(rate) FROM stock WHERE date='{current_date}'").fetchone()[0]
         self.txt_average_price.setText(str(data))
 
@@ -361,7 +363,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.stock_table.setRowCount(0)
         db=DBHandler()
         if product=="Select Product":
-            data = db.conn.execute("SELECT date,supplier,stock,rate,amount FROM stock").fetchall()
+            data = db.conn.execute("SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id ").fetchall()
             print('if')
             for index,row in enumerate(data):
                 self.stock_table.insertRow(index)
@@ -370,7 +372,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
                     self.stock_table.setItem(index,idx,QTableWidgetItem(str(i)))
         else:
             product_id=db.conn.execute(f"SELECT product_id FROM products WHERE product_name='{product}'").fetchone()[0]
-            data = db.conn.execute(f"SELECT date,supplier,stock,rate,amount FROM stock WHERE product_id={product_id}").fetchall()
+            data = db.conn.execute(f"SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id  WHERE product_id={product_id}").fetchall()
             print('else')
             for index,row in enumerate(data):
                 self.stock_table.insertRow(index)

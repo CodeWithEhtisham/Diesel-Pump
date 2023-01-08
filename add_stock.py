@@ -32,8 +32,8 @@ class AddStockWindow(QMainWindow, FORM_MAIN):
         stock= self.txt_stock.text()
         if rate and stock != '':
             try:
-                rate= int(rate)
-                stock= int(stock)
+                rate= float(rate)
+                stock= float(stock)
                 amount= rate * stock
                 self.txt_amount.setText(str(amount))
             except:
