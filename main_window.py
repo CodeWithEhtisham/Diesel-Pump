@@ -345,7 +345,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.customer_table.setRowCount(0)
         balance=[]
         for index,row in enumerate(data):
-            balance.append(row[-1])
+            balance.append(float(row[-1]))
             self.customer_table.insertRow(index)
             print(row)
             for idx,i in enumerate(row):

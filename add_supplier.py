@@ -51,7 +51,7 @@ class AddSupplierWindow(QMainWindow, FORM_MAIN):
                 # db.conn.execute("Drop table suppliers")
                 # db.conn.execute("Drop table supplier_cash_paid")
                 db.insert(table_name='suppliers',columns="name, phone, address, balance_type, balance ", values=f"'{name}', '{phone}', '{address}', '{balance_type}', '{balance}'")
-                db.insert(table_name="supplier_cash_paid",columns="supplier_id,date,payment_method,cash_paid,remaining,description,quantity,rate,amount",values=f"'{db.cursor.lastrowid}', '{QDate.currentDate().toString('dd/MM/yyyy')}', 'Cash', '0', '{balance}', 'Opening Balance', '0', '0', '0'")
+                db.insert(table_name="supplier_cash_paid",columns="supplier_id,date,payment_method,cash_paid,remaining,description,quantity,rate,amount",values=f"'{db.cursor.lastrowid}', '{QDate.currentDate().toString('dd/MM/yyyy')}', 'Cash', '0', '{balance}', 'Opening -{balance_type}', '0', '0', '0'")
                 QMessageBox.information(self, 'Success', 'Supplier added successfully')
                 self.close()
                 db.close()

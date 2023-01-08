@@ -35,31 +35,35 @@ class AccountDetailsWindow(QMainWindow, FORM_MAIN):
     def update_account_details(self):
         db= DBHandler()
         # get sales record where customer id = self.customer_id
-        data = db.conn.execute(f"SELECT sales.date,customers.name,sales.quantity,sales.rate,sales.total_amount,sales.cash_paid,sales.cash_received,sales.sub_total FROM sales LEFT JOIN customers ON sales.customer_id=customers.custmer_id WHERE customers.custmer_id = {self.user_id}").fetchall()
+        data=db.select(table_name="customer_cash_received",columns="date,description,quantity,rate,amount,cash_received,remaining",condition="customer_id="+str(self.user_id))
+        name=db.select(table_name="customers",columns="name",condition="custmer_id="+str(self.user_id))[0][0]
+        print(data)
+        print(name)
+        # data = db.conn.execute(f"SELECT sales.date,customers.name,sales.quantity,sales.rate,sales.total_amount,sales.cash_paid,sales.cash_received,sales.sub_total FROM sales LEFT JOIN customers ON sales.customer_id=customers.custmer_id WHERE customers.custmer_id = {self.user_id}").fetchall()
         self.roznamcha_table.setRowCount(0)
-        quantity=0
-        amount=0
-        cash_paid=0
-        cash_received=0
-        sub_total=0
+        # quantity=0
+        # amount=0
+        # cash_paid=0
+        # cash_received=0
+        # sub_total=0
         for index,row in enumerate(data):
-            quantity+=row[2]
-            amount+=row[4]
-            cash_paid+=row[5]
-            cash_received+=row[6]
-            sub_total+=row[7]
+            # quantity+=row[2]
+            # amount+=row[4]
+            # cash_paid+=row[5]
+            # cash_received+=row[6]
+            # sub_total+=row[7]
             self.roznamcha_table.insertRow(index)
             for idx,i in enumerate(row):
                 self.roznamcha_table.setItem(index,idx,QTableWidgetItem(str(i)))
 
-        self.label_2.setText(str(quantity))
-        self.label_6.setText(str(amount))
-        self.txt_total_cash_paid.setText(str(cash_paid))
-        self.txt_total_cash_received.setText(str(cash_received))
-        self.txt_remaining.setText(str(sub_total))
+        # self.label_2.setText(str(quantity))
+        # self.label_6.setText(str(amount))
+        # self.txt_total_cash_paid.setText(str(cash_paid))
+        # self.txt_total_cash_received.setText(str(cash_received))
+        # self.txt_remaining.setText(str(sub_total))
 
-        balace = db.conn.execute(f"SELECT balance FROM customers WHERE custmer_id = {self.user_id}").fetchone()[0]
-        self.label_4.setText(str(balace))
+        # balace = db.conn.execute(f"SELECT balance FROM customers WHERE custmer_id = {self.user_id}").fetchone()[0]
+        # self.label_4.setText(str(balace))
 
 
 def main():

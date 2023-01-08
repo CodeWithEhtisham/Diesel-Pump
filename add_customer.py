@@ -45,7 +45,7 @@ class AddCustomerWindow(QMainWindow, FORM_MAIN):
                     values=f"'{name}', '{phone}', '{vehicle}', '{address}', '{balance_type}', '{balance}'")
 
                         # self.conn.execute(f"CREATE TABLE IF NOT EXISTS customer_cash_received (id INTEGER PRIMARY KEY AUTOINCREMENT,customer_id INTEGER,date TEXT,payment_method TEXT,cash_received REAL,remaining REAL,description TEXT DEFAULT 'Cash Received',quantity INTEGER DEFAULT 0,rate REAL DEFAULT 0,amount REAL DEFAULT 0,FOREIGN KEY(customer_id) REFERENCES customers(customer_id))")
-                db.conn.execute(f"INSERT INTO customer_cash_received (customer_id,date,payment_method,cash_received,remaining,description,quantity,rate,amount) VALUES ((SELECT customer_id FROM customers WHERE name='{name}'),'{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}','Cash','{balance}','{balance}','Cash Received',0,0,0)")
+                db.insert(table_name="customer_cash_received", columns="customer_id, date, payment_method, cash_received, remaining, description, quantity, rate, amount",values=f"'{db.cursor.lastrowid}', '{datetime.datetime.now().strftime('%Y-%m-%d')}', 'Cash', '{balance}', '{balance}', 'Opening - {balance_type}', 0, 0, 0")
                 db.conn.commit()
                 QMessageBox.information(self, "Success", "Customer has been added")
                 db.close()
