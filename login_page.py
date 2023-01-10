@@ -12,6 +12,7 @@ import sys
 from os import path
 from main_window import MainWindow
 from PyQt5.uic import loadUiType
+from resources_rc import *
 # from main import MainWindow
 FORM_MAIN, _ = loadUiType('ui/login_page.ui')
 

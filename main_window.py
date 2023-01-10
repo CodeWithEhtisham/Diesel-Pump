@@ -20,6 +20,7 @@ from supplier_account_details import SupplierAccountDetailsWindow
 from add_supplier import AddSupplierWindow
 # from cash_paid import CashPaidWindow
 from PyQt5.uic import loadUiType
+from resources_rc import *
 
 FORM_MAIN, _ = loadUiType('ui/main_window.ui')
 

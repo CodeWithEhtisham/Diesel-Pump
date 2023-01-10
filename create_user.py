@@ -8,6 +8,7 @@ from db_handler import DBHandler
 import sys
 from PyQt5.uic import loadUiType
 from login_page import LoginWindow
+from resources_rc import *
 
 FORM_MAIN, _ = loadUiType('ui/create_user.ui')
 

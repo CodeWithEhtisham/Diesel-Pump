@@ -12,7 +12,7 @@ from db_handler import DBHandler
 import sys
 from os import path
 from PyQt5.uic import loadUiType
-
+from resources_rc import *
 FORM_MAIN, _ = loadUiType('ui/account_details.ui')
 
 

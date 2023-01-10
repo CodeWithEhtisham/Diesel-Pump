@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QApplication
 import sys
 from os import path
 from PyQt5.uic import loadUiType
+from resources_rc import *
 from db_handler import DBHandler
 FORM_MAIN, _ = loadUiType('ui/add_stock.ui')
 
