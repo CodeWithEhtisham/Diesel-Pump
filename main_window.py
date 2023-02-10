@@ -106,6 +106,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
     def add_supplier(self):
         self.window = AddSupplierWindow()
         self.window.show()
+        self.window.btn_save.clicked.connect(self.update)
 
     def logout(self):
         from login_page import LoginWindow
@@ -151,6 +152,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
     def add_roznamcha(self):
         self.roznamcha_window=RozNamchaWindow()
         self.roznamcha_window.show()
+        self.roznamcha_window.btn_save.clicked.connect(self.update)
 
     def sale_search_by_date(self):
         from_date=self.txt_date_from_sale.date().toString("dd/MM/yyyy")
@@ -190,6 +192,8 @@ class MainWindow(QMainWindow, FORM_MAIN):
     def add_sales(self):
         self.sale_window= SalesWindow()
         self.sale_window.show()
+        self.sale_window.btn_sale.clicked.connect(self.update)
+        self.sale_window.btn_sale_print.clicked.connect(self.update)
 
     def customer_search(self):
         option=self.search_option_customer.currentText()
@@ -213,31 +217,9 @@ class MainWindow(QMainWindow, FORM_MAIN):
     def add_customer(self):
         self.add_customer_window= AddCustomerWindow()
         self.add_customer_window.show()
+        self.add_customer_window.btn_save.clicked.connect(self.update)
 
-    def stock_search_by_date(self):
-        date=self.txt_date.date().toString("dd/MM/yyyy")
-        product=self.select_product.currentText()
-        # empty stock table
-        self.stock_table.setRowCount(0)
-        db=DBHandler()
-        if product=="Select Product":
-            print(date)
-            data = db.conn.execute(f"SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id WHERE date='{date}'").fetchall()
-            print('if',data)
-            for index,row in enumerate(data):
-                self.stock_table.insertRow(index)
-                for idx,i in enumerate(row):
-                    print(i)
-                    self.stock_table.setItem(index,idx,QTableWidgetItem(str(i)))
-        else:
-            product_id=db.conn.execute(f"SELECT product_id FROM products WHERE product_name='{product}'").fetchone()[0]
-            data = db.conn.execute(f"SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id  WHERE date='{date}' and product_id={product_id}").fetchall()
-            print('else')
-            for index,row in enumerate(data):
-                self.stock_table.insertRow(index)
-                for idx,i in enumerate(row):
-                    print(i)
-                    self.stock_table.setItem(index,idx,QTableWidgetItem(str(i)))
+    
 
         
     def update_table(self,data,obj):
@@ -246,50 +228,95 @@ class MainWindow(QMainWindow, FORM_MAIN):
             obj.insertRow(index)
             for idx,i in enumerate(row):
                 obj.setItem(index,idx,QTableWidgetItem(str(i)))
-        # main page
+
+    def update_product_table(self):
+        db=DBHandler()
+        data= db.select_all('products',"product_name")
+        self.select_product.clear()
+        self.select_product.addItem("Select Product")
+        if data: 
+            for i in data: self.select_product.addItem(i[0])
+        data=db.conn.execute("SELECT products.product_name,product_stock,products.uom FROM products").fetchall()
+        if data:
+            self.product_table.setRowCount(0)
+            for index,row in enumerate(data):
+                self.product_table.insertRow(index)
+                for i in row:
+                    self.product_table.setItem(index,row.index(i),QTableWidgetItem(str(i)))
+
+    def update_stock_table(self,data=None,option=None):
+        db=DBHandler()
+        if not data or False:
+            data = db.conn.execute("SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id").fetchall()
+        if data:
+            self.stock_table.setRowCount(0)
+            for index,row in enumerate(data):
+                self.stock_table.insertRow(index)
+                for idx,i in enumerate(row):
+                    self.stock_table.setItem(index,idx,QTableWidgetItem(str(i)))
+            current_date=QDate.currentDate().toString("dd/MM/yyyy")
+            previous_date=QDate.currentDate().addDays(-2).toString("dd/MM/yyyy")
+            if option==None:
+                data=db.conn.execute(f"SELECT AVG(rate) FROM stock WHERE date BETWEEN '{previous_date}' AND '{current_date}'").fetchone()[0]
+            else:
+                data=db.conn.execute(f"SELECT AVG(rate) FROM stock WHERE date BETWEEN '{previous_date}' AND '{current_date}' AND product_id={option}").fetchone()[0]
+            self.txt_average_price.setText(str(data))
+        else:
+            self.stock_table.setRowCount(0)
+            self.txt_average_price.setText("0")
+    
+    def stock_search_by_date(self):
+        date=self.txt_date.date().toString("dd/MM/yyyy")
+        product=self.select_product.currentText()
+        db=DBHandler()
+        if product=="Select Product":
+            print(date)
+            data = db.conn.execute(f"SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id WHERE date='{date}'").fetchall()
+            if data:
+                self.update_stock_table(data)
+            else:
+                self.stock_table.setRowCount(0)
+                self.txt_average_price.setText("0")
+        else:
+            product_id=db.conn.execute(f"SELECT product_id FROM products WHERE product_name='{product}'").fetchone()[0]
+            data = db.conn.execute(f"SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id  WHERE date='{date}' and product_id={product_id}").fetchall()
+            if data:
+                self.update_stock_table(data=data,option=product_id)
+            else:
+                self.stock_table.setRowCount(0)
+                self.txt_average_price.setText("0")
+            
+    def stock_search(self):
+        db=DBHandler()
+        product=self.select_product.currentText()
+        self.stock_table.setRowCount(0)
+        if product=="Select Product":
+            self.update_stock_table()
+        else:
+            product_id=db.conn.execute(f"SELECT product_id FROM products WHERE product_name='{product}'").fetchone()[0]
+            data = db.conn.execute(f"SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id  WHERE product_id={product_id}").fetchall()
+            if data:
+                self.update_stock_table(data=data,option=product_id)
+            else:
+                self.stock_table.setRowCount(0)
+                self.txt_average_price.setText("0")
+
+
     def update(self):
 
         db= DBHandler()
         data= db.select_all('products',"*")
         self.select_product.clear()
         self.select_product.addItem("Select Product")
-        if data:
-            for row in data:
-                # print(row)
-                self.select_product.addItem(row[1])
+        print(data)
+        if data: 
+            for i in data: self.select_product.addItem(i[1])
+
         data=db.select(table_name='business',columns="*",condition="id=1")
         if data:
             self.lbl_business_name.setText(data[0][1])
             self.lbl_business_contact.setText(data[0][4])
             self.lbl_business_address.setText(data[0][3])
-
-        
-        # clean qcombo box
-        
-
-        # get all products with total stock if not exit return 0
-        data=db.conn.execute("SELECT products.product_name,product_stock,products.uom FROM products").fetchall()
-        # print(data)
-        self.product_table.setRowCount(0)
-        for index,row in enumerate(data):
-            self.product_table.insertRow(index)
-            for i in row:
-                self.product_table.setItem(index,row.index(i),QTableWidgetItem(str(i)))
-
-        data = db.conn.execute("SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id").fetchall()
-        # print(data)
-        self.stock_table.setRowCount(0)
-        for index,row in enumerate(data):
-            self.stock_table.insertRow(index)
-            # print(row)
-            for idx,i in enumerate(row):
-                # print(i)
-                self.stock_table.setItem(index,idx,QTableWidgetItem(str(i)))
-        # calculate today avg rate of stock
-        current_date=QDate.currentDate().toString("dd/MM/yyyy")
-        previous_date=QDate.currentDate().addDays(-2).toString("dd/MM/yyyy")
-        data=db.conn.execute(f"SELECT AVG(rate) FROM stock WHERE date='{current_date}'").fetchone()[0]
-        self.txt_average_price.setText(str(data))
 
         # search all sales information with customer name
         data= db.conn.execute("SELECT sales.date,customers.name,sales.quantity,sales.rate,sales.total_amount,sales.cash_paid,sales.cash_received,sales.sub_total FROM sales LEFT JOIN customers ON sales.customer_id=customers.custmer_id").fetchall()
@@ -358,38 +385,19 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.txt_total_rem_balance.setText(str(sum(balance)))
 
 
-    def stock_search(self):
-        product=self.select_product.currentText()
-        # empty stock table 
-        self.stock_table.setRowCount(0)
-        db=DBHandler()
-        if product=="Select Product":
-            data = db.conn.execute("SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id ").fetchall()
-            print('if')
-            for index,row in enumerate(data):
-                self.stock_table.insertRow(index)
-                for idx,i in enumerate(row):
-                    print(i)
-                    self.stock_table.setItem(index,idx,QTableWidgetItem(str(i)))
-        else:
-            product_id=db.conn.execute(f"SELECT product_id FROM products WHERE product_name='{product}'").fetchone()[0]
-            data = db.conn.execute(f"SELECT stock.date,suppliers.name,stock.stock,stock.rate,stock.amount from stock LEFT JOIN suppliers ON stock.supplier_id=suppliers.supplier_id  WHERE product_id={product_id}").fetchall()
-            print('else')
-            for index,row in enumerate(data):
-                self.stock_table.insertRow(index)
-                for idx,i in enumerate(row):
-                    print(i)
-                    self.stock_table.setItem(index,idx,QTableWidgetItem(str(i)))
+    
 
 
     def add_product(self):
         self.add_product_window = AddProductWindow()
         self.add_product_window.show()
+        self.add_product_window.btn_save.clicked.connect(self.update_product_table)
         
 
     def add_stock(self):
         self.add_stock_window = AddStockWindow()
         self.add_stock_window.show()
+        self.add_stock_window.btn_save.clicked.connect(self.update_stock_table)
 
     
     def change_user_details(self):
@@ -415,7 +423,8 @@ class MainWindow(QMainWindow, FORM_MAIN):
         
     def product(self):
         self.stackedWidget.setCurrentWidget(self.product_page)
-        self.update()
+        self.update_product_table()
+        self.update_stock_table()
 
     def sales(self):
         self.stackedWidget.setCurrentWidget(self.sales_page)

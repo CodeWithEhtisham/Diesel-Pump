@@ -34,6 +34,7 @@ class AccountDetailsWindow(QMainWindow, FORM_MAIN):
     def openCashReceivedWindow(self):
         self.window = CashReceivedWindow(self.user_id)
         self.window.show()
+        self.window.btn_save.clicked.connect(self.update_account_details)
 
     def update_account_details(self):
         db= DBHandler()

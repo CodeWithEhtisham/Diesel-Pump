@@ -82,6 +82,7 @@ class SupplierAccountDetailsWindow(QMainWindow, FORM_MAIN):
     def cash_paids(self):
         self.cash_paid_window=CashPaidWindow(self.user_id)
         self.cash_paid_window.show()
+        self.cash_paid_window.btn_save.clicked.connect(self.fill_table)
 
         # self.cash_paid_window.exec_()
         # self.fill_table()

@@ -27,14 +27,38 @@ class AddStockWindow(QMainWindow, FORM_MAIN):
 
         # on rate change event
         self.txt_rate.textChanged.connect(self.calculate_amount)
+        self.txt_stock.textChanged.connect(self.add_seprator)
+        self.txt_paid_amount.textChanged.connect(self.add_seprators)
+
+    def add_seprators(self):
+        try:
+            paid= self.txt_paid_amount.text().replace(',', '')
+            if paid != '':
+                self.txt_paid_amount.setText("{:,}".format(int(paid)))
+        except:
+            QMessageBox.warning(self, 'Error', 'Paid amount must be integer')
+            self.txt_paid_amount.setText('')
+            self.txt_paid_amount.setFocus()
+            return
+
+    def add_seprator(self):
+        try:
+            stock= self.txt_stock.text().replace(',', '')
+            if stock != '':
+                self.txt_stock.setText("{:,}".format(int(stock)))
+        except:
+            QMessageBox.warning(self, 'Error', 'Stock must be integer')
+            self.txt_stock.setText('')
+            self.txt_stock.setFocus()
+            return
 
     def calculate_amount(self):
         rate= self.txt_rate.text()
-        stock= self.txt_stock.text()
+        stock= self.txt_stock.text().replace(',', '')
         if rate and stock != '':
             try:
                 rate= float(rate)
-                stock= float(stock)
+                stock= int(stock)
                 amount= rate * stock
                 self.txt_amount.setText(str(amount))
             except:
@@ -62,10 +86,10 @@ class AddStockWindow(QMainWindow, FORM_MAIN):
         product= self.select_product.currentText()
         date= self.txt_date.text()
         supplier= self.select_supplier.currentText()
-        stock= int(self.txt_stock.text())
+        stock= int(self.txt_stock.text().replace(',', ''))
         rate= float(self.txt_rate.text())
         amount= float(self.txt_amount.text())
-        paid_amount= float(self.txt_paid_amount.text())
+        paid_amount= int(self.txt_paid_amount.text().replace(',', ''))
         product_id= self.get_product_id(product)
         supplier_id= self.get_supplier_id(supplier)
 
