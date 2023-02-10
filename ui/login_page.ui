@@ -7,23 +7,23 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>300</height>
+    <height>400</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>500</width>
-    <height>300</height>
+    <height>400</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>500</width>
-    <height>300</height>
+    <height>400</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Login Page</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
@@ -31,6 +31,8 @@
 
 #label {
 	background-color: #80cbc4;
+	padding: 10px;
+	color: #fff;
 }
 
 #label_5 {
@@ -108,7 +110,7 @@ QTextEdit {
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <item>
+    <item alignment="Qt::AlignTop">
      <widget class="QLabel" name="label">
       <property name="font">
        <font>
@@ -125,7 +127,7 @@ QTextEdit {
        <set>Qt::AlignCenter</set>
       </property>
       <property name="margin">
-       <number>10</number>
+       <number>0</number>
       </property>
      </widget>
     </item>
@@ -150,7 +152,7 @@ QTextEdit {
              </font>
             </property>
             <property name="text">
-             <string>User</string>
+             <string>Username *</string>
             </property>
            </widget>
           </item>
@@ -163,7 +165,7 @@ QTextEdit {
              </font>
             </property>
             <property name="text">
-             <string>Password</string>
+             <string>Password *</string>
             </property>
            </widget>
           </item>
@@ -199,6 +201,9 @@ QTextEdit {
               <pointsize>14</pointsize>
              </font>
             </property>
+            <property name="placeholderText">
+             <string>enter user name here</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -221,12 +226,28 @@ QTextEdit {
               <pointsize>14</pointsize>
              </font>
             </property>
+            <property name="placeholderText">
+             <string>enter password here</string>
+            </property>
            </widget>
           </item>
          </layout>
         </widget>
        </item>
       </layout>
+     </widget>
+    </item>
+    <item alignment="Qt::AlignHCenter">
+     <widget class="QCheckBox" name="show_password">
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Show Password</string>
+      </property>
      </widget>
     </item>
     <item>
@@ -319,9 +340,44 @@ QTextEdit {
       </layout>
      </widget>
     </item>
+    <item alignment="Qt::AlignBottom">
+     <widget class="QWidget" name="widget_2" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>14</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>+92 335 2321360</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>14</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Software Developed: ENS Soft Tech</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
   <include location="../resources.qrc"/>
