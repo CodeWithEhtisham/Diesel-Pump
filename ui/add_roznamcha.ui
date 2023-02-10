@@ -39,6 +39,7 @@
    <property name="styleSheet">
     <string notr="true">#lbl_add_roz {
 	background-color: #80cbc4;
+	padding: 12px;
 	color: #fff;
 }
 
@@ -229,6 +230,19 @@ QLineEdit, QDateEdit, QComboBox {
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Description</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -335,6 +349,9 @@ QLineEdit, QDateEdit, QComboBox {
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
+            <property name="placeholderText">
+             <string>enter quantity here, eg - 100.00</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -360,6 +377,9 @@ QLineEdit, QDateEdit, QComboBox {
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
+            <property name="placeholderText">
+             <string>enter rate here, eg - 50.00</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -378,6 +398,9 @@ QLineEdit, QDateEdit, QComboBox {
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="placeholderText">
+             <string>auto calculation, eg - 100.00</string>
             </property>
            </widget>
           </item>
@@ -425,6 +448,9 @@ QLineEdit, QDateEdit, QComboBox {
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
+            <property name="placeholderText">
+             <string>enter cash paid here, eg - 100.00</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -443,6 +469,22 @@ QLineEdit, QDateEdit, QComboBox {
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="placeholderText">
+             <string>enter cash received here, eg - 100.00</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="txt_description">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="placeholderText">
+             <string>enter detail description here</string>
             </property>
            </widget>
           </item>
