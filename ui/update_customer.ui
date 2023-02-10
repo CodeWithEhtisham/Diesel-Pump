@@ -1,38 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>LoginWindow</class>
- <widget class="QMainWindow" name="LoginWindow">
+ <class>UpdateCustomerWindow</class>
+ <widget class="QMainWindow" name="UpdateCustomerWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>400</height>
+    <height>500</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>500</width>
-    <height>400</height>
+    <height>500</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>500</width>
-    <height>400</height>
+    <height>500</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Login Page</string>
+   <string>Update Customer</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../resources.qrc">
+    <normaloff>:/icons/assets/icons/logo.png</normaloff>:/icons/assets/icons/logo.png</iconset>
+  </property>
+  <property name="iconSize">
+   <size>
+    <width>32</width>
+    <height>32</height>
+   </size>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
-    <string notr="true">
-
-#label {
+    <string notr="true">#label_widget {
 	background-color: #80cbc4;
-	padding: 10px;
-	color: #fff;
 }
 
 #label_5 {
@@ -46,7 +52,7 @@
 	color: white;
 }
 
-#btn_clear {
+#btn_delete {
 	background-color: #81d4fa;
 	border-radius: 5px;
 	padding: 5px 0px;
@@ -60,43 +66,15 @@
 	color: white;
 }
 
-#btn_create_business {
-	background-color: #4dd0e1;
-	border-radius: 5px;
-	padding: 5px 0px;
-	color: white;
-}
-
-#btn_create_business {
-	background-color: #4dd0e1;
-	border-radius: 5px;
-	padding: 5px 0px;
-	color: white;
-}
-
-QLineEdit {
+QLineEdit, QComboBox {
 	border-radius: 5px;
 	padding: 5px 5px;
-}
-
-QDateEdit {
-	border-radius: 5px;
-	padding: 5px 5px;
-}
-
-QComboBox {
-	border-radius: 5px;
-	padding: 5px 5px;
-}
-
-QTextEdit {
-	border-radius: 10px;
-	padding: 0px 0px;
+	border: 1px solid #81d4fa;
 }</string>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_3">
+   <layout class="QVBoxLayout" name="verticalLayout_4">
     <property name="spacing">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="leftMargin">
      <number>0</number>
@@ -111,31 +89,37 @@ QTextEdit {
      <number>0</number>
     </property>
     <item alignment="Qt::AlignTop">
-     <widget class="QLabel" name="label">
-      <property name="font">
-       <font>
-        <family>Calibri</family>
-        <pointsize>18</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Login</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="margin">
-       <number>0</number>
-      </property>
+     <widget class="QWidget" name="label_widget" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>16</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Update Customer</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="margin">
+          <number>10</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
-     <widget class="QWidget" name="widget" native="true">
+     <widget class="QWidget" name="details_widget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QFrame" name="frame">
+        <widget class="QFrame" name="lbl_frame">
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -144,7 +128,7 @@ QTextEdit {
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QLabel" name="lbl_username">
+           <widget class="QLabel" name="lbl_name">
             <property name="font">
              <font>
               <family>Calibri</family>
@@ -152,12 +136,12 @@ QTextEdit {
              </font>
             </property>
             <property name="text">
-             <string>Username *</string>
+             <string>Name</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="lbl_password">
+           <widget class="QLabel" name="lbl_mobile">
             <property name="font">
              <font>
               <family>Calibri</family>
@@ -165,7 +149,59 @@ QTextEdit {
              </font>
             </property>
             <property name="text">
-             <string>Password *</string>
+             <string>Mobile</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lbl_vehicle">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Vehicle No.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lbl_address">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Address</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lbl_balance_type">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Balance Type</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lbl_balance">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Opening Balance</string>
             </property>
            </widget>
           </item>
@@ -173,7 +209,7 @@ QTextEdit {
         </widget>
        </item>
        <item>
-        <widget class="QFrame" name="frame_2">
+        <widget class="QFrame" name="lbl_inputs">
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -182,19 +218,7 @@ QTextEdit {
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QLineEdit" name="txt_username">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>35</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>35</height>
-             </size>
-            </property>
+           <widget class="QLineEdit" name="txt_name">
             <property name="font">
              <font>
               <family>Calibri</family>
@@ -202,24 +226,12 @@ QTextEdit {
              </font>
             </property>
             <property name="placeholderText">
-             <string>enter user name here</string>
+             <string>enter name here</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="txt_password">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>35</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>35</height>
-             </size>
-            </property>
+           <widget class="QLineEdit" name="txt_phone">
             <property name="font">
              <font>
               <family>Calibri</family>
@@ -227,7 +239,66 @@ QTextEdit {
              </font>
             </property>
             <property name="placeholderText">
-             <string>enter password here</string>
+             <string>enter mobile number here</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="txt_vehicle">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="placeholderText">
+             <string>enter vehicle number</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="txt_address">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="placeholderText">
+             <string>enter address here</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="balance_type">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <item>
+             <property name="text">
+              <string>Cash In</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Cash Out</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="txt_balance">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="placeholderText">
+             <string>enter opening balance</string>
             </property>
            </widget>
           </item>
@@ -235,19 +306,6 @@ QTextEdit {
         </widget>
        </item>
       </layout>
-     </widget>
-    </item>
-    <item alignment="Qt::AlignHCenter">
-     <widget class="QCheckBox" name="show_password">
-      <property name="font">
-       <font>
-        <family>Calibri</family>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Show Password</string>
-      </property>
      </widget>
     </item>
     <item>
@@ -263,15 +321,12 @@ QTextEdit {
            <bold>true</bold>
           </font>
          </property>
-         <property name="cursor">
-          <cursorShape>OpenHandCursor</cursorShape>
-         </property>
          <property name="text">
-          <string>Login</string>
+          <string>UPDATE</string>
          </property>
          <property name="icon">
           <iconset resource="../resources.qrc">
-           <normaloff>:/icons/assets/icons/user.png</normaloff>:/icons/assets/icons/user.png</iconset>
+           <normaloff>:/icons/assets/icons/save.png</normaloff>:/icons/assets/icons/save.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -282,7 +337,7 @@ QTextEdit {
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="btn_clear">
+        <widget class="QPushButton" name="btn_delete">
          <property name="font">
           <font>
            <family>Calibri</family>
@@ -291,11 +346,8 @@ QTextEdit {
            <bold>true</bold>
           </font>
          </property>
-         <property name="cursor">
-          <cursorShape>OpenHandCursor</cursorShape>
-         </property>
          <property name="text">
-          <string>CLEAR</string>
+          <string>DELETE</string>
          </property>
          <property name="icon">
           <iconset resource="../resources.qrc">
@@ -319,9 +371,6 @@ QTextEdit {
            <bold>true</bold>
           </font>
          </property>
-         <property name="cursor">
-          <cursorShape>OpenHandCursor</cursorShape>
-         </property>
          <property name="text">
           <string>CANCEL</string>
          </property>
@@ -340,44 +389,9 @@ QTextEdit {
       </layout>
      </widget>
     </item>
-    <item alignment="Qt::AlignBottom">
-     <widget class="QWidget" name="widget_2" native="true">
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>14</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>+92 335 2321360</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>14</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Software Developed: ENS Soft Tech</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
    </layout>
   </widget>
+  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
   <include location="../resources.qrc"/>
