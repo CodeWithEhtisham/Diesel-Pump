@@ -21,6 +21,8 @@ from add_supplier import AddSupplierWindow
 # from cash_paid import CashPaidWindow
 from PyQt5.uic import loadUiType
 from resources_rc import *
+from expenses import ExpensesWindow
+from expense_type import ExpenseTypeWindow
 
 FORM_MAIN, _ = loadUiType('ui/main_window.ui')
 
@@ -35,6 +37,12 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.Handle_Buttons()
 
     def Handle_Buttons(self):
+        self.txt_date_from_sale.setDate(QDate.currentDate())
+        self.txt_date_to_sale.setDate(QDate.currentDate())
+        self.txt_date_to_rn.setDate(QDate.currentDate())
+        self.txt_date_from_rn.setDate(QDate.currentDate())
+        self.from_date_expense.setDate(QDate.currentDate())
+        self.to_date_expense.setDate(QDate.currentDate())
         self.btn_home.clicked.connect(self.home)
         self.btn_product.clicked.connect(self.product)
         self.btn_sales.clicked.connect(self.sales)
@@ -67,11 +75,12 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.btn_change_user_details.clicked.connect(self.change_user_details)
         self.btn_change_pwd.clicked.connect(self.change_password)
 
-        self.btn_refresh_customer.clicked.connect(self.update_customer_widget)
-        self.btn_search_customer.clicked.connect(self.customer_search)
+        self.btn_refresh_customer.clicked.connect(self.update_customer_table)
+        # self.btn_search_customer.clicked.connect(self.customer_search)
+        self.txt_search_customer.textChanged.connect(self.customer_search)
 
         self.txt_search_supplier.textChanged.connect(self.supplier_search)
-        self.btn_refresh_supplier.clicked.connect(self.update)
+        self.btn_refresh_supplier.clicked.connect(self.update_supplier_table)
 
         # product qcombobox select value
         self.select_product.activated.connect(self.stock_search)
@@ -80,28 +89,105 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.txt_date.dateChanged.connect(self.stock_search_by_date)
         self.txt_search_rn.textChanged.connect(self.search_roznamcha_by_name)
         self.btn_search_rn.clicked.connect(self.search_roznamcha_by_date)
-        self.btn_refresh_rn.clicked.connect(self.update)
-        self.btn_refresh_sale.clicked.connect(self.update)
+        self.btn_refresh_rn.clicked.connect(self.update_roznamcha_table)
+        self.btn_refresh_sale.clicked.connect(self.update_sales_table)
+
+        self.btn_add_expense.clicked.connect(self.add_expense)
+        self.btn_expense_refresh.clicked.connect(self.update_expense_table)
+        self.btn_search_expense.clicked.connect(self.expense_search_by_date)
+        self.txt_expense_search.textChanged.connect(self.search_expense)
+        self.btn_expense_type.clicked.connect(self.open_expense_type_window)
+    
+    def expense_search_by_date(self):
+        from_date = self.from_date_expense.date().toString('dd/MM/yyyy')
+        to_date = self.to_date_expense.date().toString('dd/MM/yyyy')
+
+        db = DBHandler()
+        data = db.select(
+            table_name='expenses',
+            columns="date,hoa,amount,payment_type,recipient_name,comment",
+            condition=f"date BETWEEN '{from_date}' AND '{to_date}'")
+        if data:
+            self.update_expense_table(data)
+        else:
+            self.expense_table.setRowCount(0)
+            self.total_expense.setText('0')
+
+    def open_expense_type_window(self):
+        self.expense_type_window=ExpenseTypeWindow()
+        self.expense_type_window.show()
+    
+    def search_expense(self):
+        db=DBHandler()
+        search = self.txt_expense_search.text()
+        data = db.select(
+            table_name='expenses',
+            columns="date,hoa,amount,payment_type,recipient_name,comment",
+            condition=f"date LIKE '%{search}%' OR hoa LIKE '%{search}%' OR amount LIKE '%{search}%' OR payment_type LIKE '%{search}%' OR recipient_name LIKE '%{search}%' OR comment LIKE '%{search}%'")
+        if data:
+            self.update_expense_table(data)
+        else:
+            self.expense_table.setRowCount(0)
+            self.total_expense.setText('0')
+        
+    def add_expense(self):
+        self.add_expense_window = ExpensesWindow()
+        self.add_expense_window.show()
+        self.add_expense_window.btn_save.clicked.connect(self.update_expense_table)
+
+    def update_expense_table(self,expense=None):
+        db=DBHandler()
+        if expense is None or expense==False:
+            expense = db.select_all(
+                table_name='expenses',
+                columns="date,hoa,amount,payment_type,recipient_name,comment",
+            )
+        if expense:
+            amount = 0
+            self.expense_table.setRowCount(0)
+            for row, form in enumerate(expense):
+                self.expense_table.insertRow(row)
+                amount += int(form[2])
+                for column, item in enumerate(form):
+                    self.expense_table.setItem(
+                        row, column, QTableWidgetItem(str(item)))
+            self.total_expense.setText(str(amount))
+        else:
+            self.expense_table.setRowCount(0)
+            self.total_expense.setText('0')
+
+
+    def update_supplier_table(self,data=None):
+        db=DBHandler()
+        if data is None or data is False:
+            data=db.select_all(table_name='suppliers',columns='supplier_id,name,phone,address,balance')
+        if data:
+            self.supplier_table.setRowCount(0)
+            for index,row in enumerate(data):
+                self.supplier_table.insertRow(index)
+                for idx,i in enumerate(row):
+                    self.supplier_table.setItem(index,idx,QTableWidgetItem(str(i)))
+            self.txt_total_supplier.setText(str(len(data)))
+            self.txt_supplier_total_rem_balance.setText(
+                str(sum([float(i[-1]) for i in data])))
+        else:
+            self.supplier_table.setRowCount(0)
+            self.txt_total_supplier.setText('0')
+            self.txt_supplier_total_rem_balance.setText('0')
 
     def supplier_search(self):
-        option = self.search_option_supplier.currentText()
+        # option = self.search_option_supplier.currentText()
         search = self.txt_search_supplier.text()
         db = DBHandler()
-        if option == "By Name":
-            data = db.select(table_name='suppliers', columns='supplier_id,name,phone,address,balance',
-                             condition=f"name LIKE '%{search}%'")
-            self.update_table(data, self.supplier_table)
-        elif option == "By Contact":
-            data = db.select(table_name='suppliers', columns='supplier_id,name,phone,address,balance',
-                             condition=f"phone LIKE '%{search}%'")
-            self.update_table(data, self.supplier_table)
-        elif option == "By Address":
-            data = db.select(table_name='suppliers', columns='supplier_id,name,phone,address,balance',
-                             condition=f"address LIKE '%{search}%'")
-            self.update_table(data, self.supplier_table)
+        data = db.conn.execute(
+            f"SELECT supplier_id,name,phone,address,balance FROM suppliers WHERE name LIKE '%{search}%' OR phone LIKE '%{search}%' OR address LIKE '%{search}%'").fetchall()
+        if data:
+            self.update_supplier_table(data)
         else:
-            # please select option
-            QMessageBox.information(self, "Error", "Please select option")
+            self.supplier_table.setRowCount(0)
+            self.txt_total_supplier.setText('0')
+            self.txt_supplier_total_rem_balance.setText('0')
+
 
     def supplier_account_details(self):
         row = self.supplier_table.currentRow()
@@ -112,7 +198,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
     def add_supplier(self):
         self.window = AddSupplierWindow()
         self.window.show()
-        self.window.btn_save.clicked.connect(self.update)
+        self.window.btn_save.clicked.connect(self.update_supplier_table)
 
     def logout(self):
         from login_page import LoginWindow
@@ -133,33 +219,51 @@ class MainWindow(QMainWindow, FORM_MAIN):
         db = DBHandler()
         data = db.conn.execute(
             f"SELECT date,products.product_name,quantity,rate,total_amount,customers.name,cash_paid,cash_received FROM roznamcha LEFT JOIN customers ON roznamcha.customer_id=customers.custmer_id LEFT JOIN products ON roznamcha.product_id=products.product_id WHERE roznamcha.date BETWEEN '{from_date}' AND '{to_date}'").fetchall()
-        self.roznamcha_table.setRowCount(0)
-        for index, row in enumerate(data):
-            self.roznamcha_table.insertRow(index)
-            for idx, i in enumerate(row):
-                self.roznamcha_table.setItem(
-                    index, idx, QTableWidgetItem(str(i)))
+        if data:
+            self.update_roznamcha_table(data)
+        else:
+            self.roznamcha_table.setRowCount(0)
+            self.txt_total_cash_in.setText('0')
+            self.txt_total_cash_out.setText('0')
 
     def search_roznamcha_by_name(self):
-        option = self.search_option_rn.currentText()
-        if option == "Select Option":
-            QMessageBox.warning(self, "Error", "Please Select Search Option")
-        else:
-            value = self.txt_search_rn.text()
+            search = self.txt_search_rn.text()
             db = DBHandler()
             data = db.conn.execute(
-                f"SELECT date,products.product_name,quantity,rate,total_amount,customers.name,cash_paid,cash_received FROM roznamcha LEFT JOIN customers ON roznamcha.customer_id=customers.custmer_id LEFT JOIN products ON roznamcha.product_id=products.product_id Where customers.name LIKE '%{value}%'").fetchall()
+                f"SELECT date,products.product_name,quantity,rate,total_amount,customers.name,cash_paid,cash_received FROM roznamcha LEFT JOIN customers ON roznamcha.customer_id=customers.custmer_id LEFT JOIN products ON roznamcha.product_id=products.product_id Where customers.name LIKE '%{search}%' or products.product_name LIKE '%{search}%'").fetchall()
+            if data:
+                self.update_roznamcha_table(data)
+            else:
+                self.roznamcha_table.setRowCount(0)
+                self.txt_total_cash_in.setText('0')
+                self.txt_total_cash_out.setText('0')
+
+    def update_roznamcha_table(self,data=None):
+        db=DBHandler()
+        if data is None or data is False:
+            data = db.conn.execute(f"SELECT date,products.product_name,quantity,rate,total_amount,customers.name,cash_paid,cash_received FROM roznamcha LEFT JOIN customers ON roznamcha.customer_id=customers.custmer_id LEFT JOIN products ON roznamcha.product_id=products.product_id ").fetchall()
+        if data:
             self.roznamcha_table.setRowCount(0)
+            cash_paid = 0
+            cash_received = 0
             for index, row in enumerate(data):
                 self.roznamcha_table.insertRow(index)
+                cash_paid += row[-2]
+                cash_received += row[-1]
                 for idx, i in enumerate(row):
                     self.roznamcha_table.setItem(
                         index, idx, QTableWidgetItem(str(i)))
+            self.txt_total_cash_in.setText(str(cash_received))
+            self.txt_total_cash_out.setText(str(cash_paid))
+        else:
+            self.roznamcha_table.setRowCount(0)
+            self.txt_total_cash_in.setText('0')
+            self.txt_total_cash_out.setText('0')
 
     def add_roznamcha(self):
         self.roznamcha_window = RozNamchaWindow()
         self.roznamcha_window.show()
-        self.roznamcha_window.btn_save.clicked.connect(self.update)
+        self.roznamcha_window.btn_save.clicked.connect(self.update_roznamcha_table)
 
     def sale_search_by_date(self):
         from_date = self.txt_date_from_sale.date().toString("dd/MM/yyyy")
@@ -167,75 +271,103 @@ class MainWindow(QMainWindow, FORM_MAIN):
         db = DBHandler()
         data = db.conn.execute(
             f"SELECT sales.date,customers.name,sales.quantity,sales.rate,sales.total_amount,sales.cash_paid,sales.cash_received,sales.sub_total FROM sales LEFT JOIN customers ON sales.customer_id=customers.custmer_id WHERE sales.date BETWEEN '{from_date}' AND '{to_date}'").fetchall()
-        self.sales_table.setRowCount(0)
-        for index, row in enumerate(data):
-            self.sales_table.insertRow(index)
-            for idx, i in enumerate(row):
-                self.sales_table.setItem(index, idx, QTableWidgetItem(str(i)))
+        if data:
+            self.update_sales_table(data)
+        else:
+            self.sales_table.setRowCount(0)
+            self.txt_total_sales.setText("0")
+            self.txt_total_cash_paid.setText("0")
+            self.txt_total_cash_received.setText("0")
 
     def sale_search_by_option(self):
-        option = self.search_option_sale.currentText()
-        value = self.txt_search_sale.text()
-        if option == "Select Option":
-            QMessageBox.warning(self, "Error", "Please Select Search Option")
-        elif option == "By Name":
-            db = DBHandler()
-            data = db.conn.execute(
-                f"SELECT sales.date,customers.name,sales.quantity,sales.rate,sales.total_amount,sales.cash_paid,sales.cash_received,sales.sub_total FROM sales LEFT JOIN customers ON sales.customer_id=customers.custmer_id WHERE customers.name LIKE '%{value}%'").fetchall()
+        # option = self.search_option_sale.currentText()
+        search = self.txt_search_sale.text()
+        db = DBHandler()
+        data = db.conn.execute(
+            f"SELECT sales.date,customers.name,sales.quantity,sales.rate,sales.total_amount,sales.cash_paid,sales.cash_received,sales.sub_total FROM sales LEFT JOIN customers ON sales.customer_id=customers.custmer_id WHERE customers.name LIKE '%{search}%' OR customers.phone LIKE '%{search}%'").fetchall()
+        if data:
+            self.update_sales_table(data)
+        else:
             self.sales_table.setRowCount(0)
+            self.txt_total_sales.setText("0")
+            self.txt_total_cash_paid.setText("0")
+            self.txt_total_cash_received.setText("0")
+
+    def update_sales_table(self, data=None):
+        db=DBHandler()
+        if data is None or data is False:
+            data = db.conn.execute(
+            "SELECT sales.date,customers.name,sales.quantity,sales.rate,sales.total_amount,sales.cash_paid,sales.cash_received,sales.sub_total FROM sales LEFT JOIN customers ON sales.customer_id=customers.custmer_id").fetchall()
+        # print(f"sales {data}")
+        if data:
+            self.sales_table.setRowCount(0)
+            total = 0
+            cash_paid = 0
+            cash_received = 0
             for index, row in enumerate(data):
                 self.sales_table.insertRow(index)
+                total += row[4]
+                cash_paid += row[5]
+                cash_received += row[6]
                 for idx, i in enumerate(row):
-                    self.sales_table.setItem(
-                        index, idx, QTableWidgetItem(str(i)))
-        elif option == "By Contact":
-            db = DBHandler()
-            data = db.conn.execute(
-                f"SELECT sales.date,customers.name,sales.quantity,sales.rate,sales.total_amount,sales.cash_paid,sales.cash_received,sales.sub_total FROM sales LEFT JOIN customers ON sales.customer_id=customers.custmer_id WHERE customers.phone LIKE '%{value}%'").fetchall()
+                    self.sales_table.setItem(index, idx, QTableWidgetItem(str(i)))
+
+            self.txt_total_sales.setText(str(total))
+            self.txt_total_cash_paid.setText(str(cash_paid))
+            self.txt_total_cash_received.setText(str(cash_received))
+        else:
             self.sales_table.setRowCount(0)
-            for index, row in enumerate(data):
-                self.sales_table.insertRow(index)
-                for idx, i in enumerate(row):
-                    self.sales_table.setItem(
-                        index, idx, QTableWidgetItem(str(i)))
+            self.txt_total_sales.setText("0")
+            self.txt_total_cash_paid.setText("0")
+            self.txt_total_cash_received.setText("0")
 
     def add_sales(self):
         self.sale_window = SalesWindow()
         self.sale_window.show()
-        self.sale_window.btn_sale.clicked.connect(self.update)
-        self.sale_window.btn_sale_print.clicked.connect(self.update)
+        self.sale_window.btn_sale.clicked.connect(self.update_sales_table)
+        self.sale_window.btn_sale_print.clicked.connect(self.update_sales_table)
 
     def customer_search(self):
-        option = self.search_option_customer.currentText()
-        value = self.txt_search_customer.text()
-        if option == "Select Option":
-            QMessageBox.warning(self, "Error", "Please Select Search Option")
+        search=self.txt_search_customer.text()
+        db=DBHandler()
+        data=db.conn.execute(f"SELECT * FROM customers WHERE name LIKE '%{search}%' OR phone LIKE '%{search}%' OR address LIKE '%{search}%' OR vehicle LIKE '%{search}%' OR balance_type LIKE '%{search}%'").fetchall()
+        if data:
+            self.update_customer_table(data)
         else:
-            db = DBHandler()
-            if option == "By Name":
-                data = db.conn.execute(
-                    f"SELECT * FROM customers WHERE name LIKE '%{value}%'").fetchall()
-            elif option == "By Contact":
-                data = db.conn.execute(
-                    f"SELECT * FROM customers WHERE phone LIKE '%{value}%'").fetchall()
-            elif option == "By Vehicle":
-                data = db.conn.execute(
-                    f"SELECT * FROM customers WHERE vehicle LIKE '%{value}%'").fetchall()
             self.customer_table.setRowCount(0)
+            self.txt_total_customers.setText("0")
+            self.txt_total_rem_balance.setText("0")
+
+    def update_customer_table(self,data=None):
+        print("customer data ",data)
+        db = DBHandler()
+        if data is None or data is False:
+            print("data is none")
+            data = db.select_all(
+                'customers', 'custmer_id,name,phone,vehicle,address,balance')
+        if data:
+            self.customer_table.setRowCount(0)
+            balance = []
             for index, row in enumerate(data):
+                balance.append(float(row[-1]))
                 self.customer_table.insertRow(index)
+                print(row)
                 for idx, i in enumerate(row):
+                    # print(i)
                     self.customer_table.setItem(
                         index, idx, QTableWidgetItem(str(i)))
+            self.txt_total_customers.setText(str(len(data)))
+            self.txt_total_rem_balance.setText(str(sum(balance)))
+        else:
+            self.customer_table.setRowCount(0)
+            self.txt_total_customers.setText("0")
+            self.txt_total_rem_balance.setText("0")
 
     def add_customer(self):
         self.add_customer_window = AddCustomerWindow()
         self.add_customer_window.show()
-        self.add_customer_window.btn_save.clicked.connect(self.update)
+        self.add_customer_window.btn_save.clicked.connect(self.update_customer_table)
 
-    
-
-        
     def update_table(self,data,obj):
         obj.setRowCount(0)
         for index,row in enumerate(data):
@@ -315,14 +447,37 @@ class MainWindow(QMainWindow, FORM_MAIN):
                 self.stock_table.setRowCount(0)
                 self.txt_average_price.setText("0")
 
+    def update_report_table(self):
+        db=DBHandler()
+        self.total_stock_amount.setText(
+            str(db.conn.execute("SELECT SUM(amount) FROM stock").fetchone()[0])
+        )
+        self.total_payable.setText(
+            str(db.conn.execute("SELECT SUM(balance) FROM customers").fetchone()[0])
+        )
+        self.total_receivable.setText(
+            str(db.conn.execute("SELECT SUM(balance) FROM suppliers").fetchone()[0])
+        )
+        self.total_sales.setText(
+            str(db.conn.execute("SELECT SUM(sub_total) FROM sales").fetchone()[0])
+        )
+        self.total_stock_purchase.setText(
+            str(db.conn.execute("SELECT SUM(amount) FROM stock").fetchone()[0])
+        )
+        self.total_expenses.setText(
+            str(db.conn.execute("SELECT SUM(amount) FROM expenses").fetchone()[0])
+        )
+        self.net_balance.setText(
+            str(db.conn.execute("SELECT SUM(total_amount) FROM sales").fetchone()[0]-db.conn.execute("SELECT SUM(amount) FROM expenses").fetchone()[0])
+        )
+
+    
 
     def update(self):
-
         db = DBHandler()
         data = db.select_all('products', "*")
         self.select_product.clear()
         self.select_product.addItem("Select Product")
-        print(data)
         if data: 
             for i in data: self.select_product.addItem(i[1])
 
@@ -331,76 +486,6 @@ class MainWindow(QMainWindow, FORM_MAIN):
             self.lbl_business_name.setText(data[0][1])
             self.lbl_business_contact.setText(data[0][4])
             self.lbl_business_address.setText(data[0][3])
-
-        # search all sales information with customer name
-        data = db.conn.execute(
-            "SELECT sales.date,customers.name,sales.quantity,sales.rate,sales.total_amount,sales.cash_paid,sales.cash_received,sales.sub_total FROM sales LEFT JOIN customers ON sales.customer_id=customers.custmer_id").fetchall()
-        # print(f"sales {data}")
-        self.sales_table.setRowCount(0)
-        total = 0
-        cash_paid = 0
-        cash_received = 0
-        for index, row in enumerate(data):
-            self.sales_table.insertRow(index)
-            # print(row)
-            total += row[4]
-            cash_paid += row[5]
-            cash_received += row[6]
-            for idx, i in enumerate(row):
-                # print(i)
-                self.sales_table.setItem(index, idx, QTableWidgetItem(str(i)))
-
-        self.txt_total_sales.setText(str(total))
-        self.txt_total_cash_paid.setText(str(cash_paid))
-        self.txt_total_cash_received.setText(str(cash_received))
-        self.txt_date_from_sale.setDate(QDate.currentDate())
-        self.txt_date_to_sale.setDate(QDate.currentDate())
-
-        data = db.conn.execute(f"SELECT date,products.product_name,quantity,rate,total_amount,customers.name,cash_paid,cash_received FROM roznamcha LEFT JOIN customers ON roznamcha.customer_id=customers.custmer_id LEFT JOIN products ON roznamcha.product_id=products.product_id ").fetchall()
-        self.roznamcha_table.setRowCount(0)
-        # print(data)
-        cash_paid = 0
-        cash_received = 0
-        for index, row in enumerate(data):
-            self.roznamcha_table.insertRow(index)
-            cash_paid += row[-2]
-            cash_received += row[-1]
-            for idx, i in enumerate(row):
-                self.roznamcha_table.setItem(
-                    index, idx, QTableWidgetItem(str(i)))
-        self.txt_date_to_rn.setDate(QDate.currentDate())
-        self.txt_date_from_rn.setDate(QDate.currentDate())
-        self.txt_total_cash_in.setText(str(cash_received))
-        self.txt_total_cash_out.setText(str(cash_paid))
-
-        # get supplier data
-        data = db.select_all(table_name="suppliers",
-                             columns="supplier_id,name,phone,address,balance")
-        self.update_table(data, self.supplier_table)
-        self.txt_total_supplier.setText(str(len(data)))
-        self.txt_supplier_total_rem_balance.setText(
-            str(sum([float(i[-1]) for i in data])))
-
-    def update_customer_widget(self):
-        db = DBHandler()
-        data = db.select_all(
-            'customers', 'custmer_id,name,phone,vehicle,address,balance')
-        print(data)
-        self.customer_table.setRowCount(0)
-        balance = []
-        for index, row in enumerate(data):
-            balance.append(float(row[-1]))
-            self.customer_table.insertRow(index)
-            print(row)
-            for idx, i in enumerate(row):
-                # print(i)
-                self.customer_table.setItem(
-                    index, idx, QTableWidgetItem(str(i)))
-        self.txt_total_customers.setText(str(len(data)))
-        self.txt_total_rem_balance.setText(str(sum(balance)))
-
-
-    
 
 
     def add_product(self):
@@ -429,6 +514,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
     def edit_business(self):
         self.edit_business = UpdateBusinessWindow()
         self.edit_business.show()
+        
 
     def home(self):
         self.stackedWidget.setCurrentWidget(self.home_page)
@@ -441,28 +527,28 @@ class MainWindow(QMainWindow, FORM_MAIN):
 
     def sales(self):
         self.stackedWidget.setCurrentWidget(self.sales_page)
-        self.update()
+        self.update_sales_table()
 
     def customer(self):
         self.stackedWidget.setCurrentWidget(self.customer_page)
-        self.update_customer_widget()
-        self.update()
+        self.update_customer_table()
+        # self.update()
 
     def supplier(self):
         self.stackedWidget.setCurrentWidget(self.supplier_page)
-        self.update()
+        self.update_supplier_table()
 
     def roznamcha(self):
         self.stackedWidget.setCurrentWidget(self.roznamcha_page)
-        self.update()
+        self.update_roznamcha_table()
 
     def reports(self):
         self.stackedWidget.setCurrentWidget(self.reports_page)
-        self.update()
+        self.update_report_table()
 
     def expense(self):
         self.stackedWidget.setCurrentWidget(self.expense_page)
-        self.update()
+        self.update_expense_table()
 
     def settings(self):
         self.stackedWidget.setCurrentWidget(self.settings_page)
