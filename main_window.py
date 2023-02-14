@@ -23,6 +23,7 @@ from PyQt5.uic import loadUiType
 from resources_rc import *
 from expenses import ExpensesWindow
 from expense_type import ExpenseTypeWindow
+from update_expense import UpdateExpensesWindow
 
 FORM_MAIN, _ = loadUiType('ui/main_window.ui')
 
@@ -97,6 +98,24 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.btn_search_expense.clicked.connect(self.expense_search_by_date)
         self.txt_expense_search.textChanged.connect(self.search_expense)
         self.btn_expense_type.clicked.connect(self.open_expense_type_window)
+
+        self.btn_edit_expense.clicked.connect(self.edit_expense)
+
+    def edit_expense(self):
+        db=DBHandler()
+        row = self.expense_table.currentRow()
+        date = self.expense_table.item(row, 0).text()
+        hoa = self.expense_table.item(row, 1).text()
+        amount = self.expense_table.item(row, 2).text()
+        payment_type = self.expense_table.item(row, 3).text()
+        recipient_name = self.expense_table.item(row, 4).text()
+        comment = self.expense_table.item(row, 5).text()
+        id = db.select(table_name='expenses', columns='id', condition=f"date='{date}' AND hoa='{hoa}' AND amount='{amount}' AND payment_type='{payment_type}' AND recipient_name='{recipient_name}' AND comment='{comment}'")[0][0]
+        # print(id)
+        self.expense_window = UpdateExpensesWindow(id)
+        self.expense_window.show()
+        self.expense_window.btn_save.clicked.connect(self.update_expense_table)
+        self.expense_window.btn_delete.clicked.connect(self.update_expense_table)
     
     def expense_search_by_date(self):
         from_date = self.from_date_expense.date().toString('dd/MM/yyyy')
