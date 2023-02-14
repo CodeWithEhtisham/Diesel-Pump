@@ -78,10 +78,13 @@ class RozNamchaWindow(QMainWindow, FORM_MAIN):
         cash_paid = float(self.txt_cash_paid.text())
         cash_received = float(self.txt_cash_received.text())
         sub_total= (total_amount)+(cash_paid)-(cash_received)
+        description = self.txt_description.text()
+        description = description if description else 'no description'
 
 
         if prodcut_id != '' and customer_id != '' and date != '' and quantity != '' and rate != '' and total_amount != '' and cash_paid != '' and cash_received != '':
-            db.conn.execute('INSERT INTO roznamcha (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received) VALUES (?,?,?,?,?,?,?,?)',(prodcut_id,customer_id,date,quantity,rate,total_amount,cash_paid,cash_received))
+            db.conn.execute('INSERT INTO roznamcha (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received,description) VALUES (?,?,?,?,?,?,?,?,?)',(prodcut_id,customer_id,date,quantity,rate,total_amount,cash_paid,cash_received,description))
+            db.conn.execute("UPDATE products SET product_stock=product_stock-? WHERE product_id=?",(quantity,prodcut_id))
             customer_remaining = float(db.conn.execute("SELECT balance FROM customers WHERE custmer_id='{}'".format(customer_id)).fetchone()[0])
 
             if customer_remaining>=0 and sub_total>=0:
