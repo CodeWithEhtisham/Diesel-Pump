@@ -24,6 +24,9 @@ from resources_rc import *
 from expenses import ExpensesWindow
 from expense_type import ExpenseTypeWindow
 from update_expense import UpdateExpensesWindow
+from update_roznamcha import UpdateNamchaWindow
+from update_customer import UpdateCustomerWindow
+from update_supplier import UpdateSupplierWindow
 
 FORM_MAIN, _ = loadUiType('ui/main_window.ui')
 
@@ -100,7 +103,44 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.btn_expense_type.clicked.connect(self.open_expense_type_window)
 
         self.btn_edit_expense.clicked.connect(self.edit_expense)
+        # self.btn_edit_rn.clicked.connect(self.edit_roznamcha)
+        self.btn_edit_customer.clicked.connect(self.edit_customer)
+        self.btn_edit_supplier.clicked.connect(self.edit_supplier)
 
+    def edit_supplier(self):
+        row = self.supplier_table.currentRow()
+        try:
+            id = self.supplier_table.item(row, 0).text()
+            self.edit_supplier_window = UpdateSupplierWindow(int(id))
+            self.edit_supplier_window.show()
+            self.edit_supplier_window.btn_save.clicked.connect(self.update_supplier_table)
+        except:
+            QMessageBox.warning(self, "Error", "Please select a supplier")
+
+    def edit_customer(self):
+        row = self.customer_table.currentRow()
+        print(row)
+        try:
+            id = self.customer_table.item(row, 0).text()
+            self.edit_customer_window = UpdateCustomerWindow(int(id))
+            self.edit_customer_window.show()
+            self.edit_customer_window.btn_save.clicked.connect(self.update_customer_table)
+        except:
+            QMessageBox.warning(self, "Error", "Please select a customer")
+
+    def edit_roznamcha(self):
+        db=DBHandler()
+        row = self.roznamcha_table.currentRow()
+        date = self.roznamcha_table.item(row, 0).text()
+        quantity = self.roznamcha_table.item(row, 2).text()
+        rate= self.roznamcha_table.item(row, 3).text()
+        total_amount = self.roznamcha_table.item(row, 4).text()
+        cash_paid = self.roznamcha_table.item(row, 6).text()
+        cash_received = self.roznamcha_table.item(row, 7).text()
+        # date,quantity,rate,total_amount,cash_paid,cash_received
+        id = db.select(table_name='roznamcha', columns='roznamcha_id', condition=f"date='{date}' AND quantity='{quantity}' AND rate='{rate}' AND total_amount='{total_amount}' AND cash_paid='{cash_paid}' AND cash_received='{cash_received}'")[0][0]
+        self.edit_roznamcha = UpdateNamchaWindow(id)
+        self.edit_roznamcha.show()
     def edit_expense(self):
         db=DBHandler()
         row = self.expense_table.currentRow()
@@ -111,11 +151,14 @@ class MainWindow(QMainWindow, FORM_MAIN):
         recipient_name = self.expense_table.item(row, 4).text()
         comment = self.expense_table.item(row, 5).text()
         id = db.select(table_name='expenses', columns='id', condition=f"date='{date}' AND hoa='{hoa}' AND amount='{amount}' AND payment_type='{payment_type}' AND recipient_name='{recipient_name}' AND comment='{comment}'")[0][0]
-        # print(id)
-        self.expense_window = UpdateExpensesWindow(id)
-        self.expense_window.show()
-        self.expense_window.btn_save.clicked.connect(self.update_expense_table)
-        self.expense_window.btn_delete.clicked.connect(self.update_expense_table)
+        if id:
+            self.expense_window = UpdateExpensesWindow(id)
+            self.expense_window.show()
+            self.expense_window.btn_save.clicked.connect(self.update_expense_table)
+            self.expense_window.btn_delete.clicked.connect(self.update_expense_table)
+        else:
+            QMessageBox.warning(self, "Error", "Please select an expense")
+            return
     
     def expense_search_by_date(self):
         from_date = self.from_date_expense.date().toString('dd/MM/yyyy')
@@ -517,6 +560,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.add_stock_window = AddStockWindow()
         self.add_stock_window.show()
         self.add_stock_window.btn_save.clicked.connect(self.update_stock_table)
+        self.add_stock_window.btn_save.clicked.connect(self.update_product_table)
 
     def change_user_details(self):
         self.changeuserdetaisls = UpdateUserWindow()

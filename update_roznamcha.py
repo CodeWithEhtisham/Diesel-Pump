@@ -31,7 +31,7 @@ class UpdateNamchaWindow(QMainWindow, FORM_MAIN):
         self.update()
 
     def Handle_Buttons(self):
-        self.btn_save.clicked.connect(self.update_roznamcha)
+        # self.btn_save.clicked.connect(self.update_roznamcha)
         self.btn_delete.clicked.connect(self.delete_roznamcha)
         self.txt_rate.textChanged.connect(self.calculate_total_amount)
         # self.btn_cancel.clicked.connect(self.close)
@@ -42,7 +42,7 @@ class UpdateNamchaWindow(QMainWindow, FORM_MAIN):
             columns="date,product_id,quantity,rate,total_amount,customer_id,cash_paid,cash_received,description",
             condition="roznamcha_id={}".format(self.id)
         )
-        self.txt_date.setDate(data[0][0])
+        self.txt_date.setDate(QDate.fromString(data[0][0],'dd/MM/yyyy'))
         self.select_product.setCurrentText(self.db.select(table_name='products',columns='product_name',condition="product_id={}".format(data[0][1]))[0][0])
         self.txt_quantity.setText(str(data[0][2]))
         self.txt_rate.setText(str(data[0][3]))
@@ -51,10 +51,16 @@ class UpdateNamchaWindow(QMainWindow, FORM_MAIN):
         self.txt_cash_paid.setText(str(data[0][6]))
         self.txt_cash_received.setText(str(data[0][7]))
         self.txt_description.setText(data[0][8])
-
-
-
-
+        # read only all fields
+        self.txt_date.setReadOnly(True)
+        self.select_product.setDisabled(True)
+        self.txt_quantity.setReadOnly(True)
+        self.txt_rate.setReadOnly(True)
+        self.txt_total_amount.setReadOnly(True)
+        self.select_customer.setDisabled(True)
+        self.txt_cash_paid.setReadOnly(True)
+        self.txt_cash_received.setReadOnly(True)
+        self.txt_description.setReadOnly(True)
 
     def calculate_total_amount(self):
         quantity = int(self.txt_quantity.text())
@@ -82,13 +88,24 @@ class UpdateNamchaWindow(QMainWindow, FORM_MAIN):
             return cash
 
     def delete_roznamcha(self):
-        try:
-            confirm=QMessageBox.question(self, "Confirm Delete", "Are you sure you want to delete this expense?", QMessageBox.Yes | QMessageBox.No)
-            if confirm == QMessageBox.Yes:
-                self.db.conn.execute("DELETE FROM roznamcha WHERE roznamcha_id={}".format(self.id))
-                self.db.conn.commit()
-        
-    
+        product_id = self.get_product_id(self.db,self.select_product.currentText())
+        customer_id = self.get_customer_id(self.db,self.select_customer.currentText())
+        self.db.conn.execute(
+            f"UPDATE products SET quantity=quantity+{self.txt_quantity.text()} WHERE product_id={product_id}"
+        )
+        customer_balance = self.db.conn.execute(
+            f"SELECT balance FROM customers WHERE custmer_id={customer_id}"
+        ).fetchone()[0]
+        if customer_balance>0:
+            self.db.conn.execute(
+                f"UPDATE customers SET balance=balance-{self.txt_cash_received.text()} WHERE custmer_id={customer_id}"
+            )
+        else:
+            self.db.conn.execute(
+                f"UPDATE customers SET balance=balance+{self.txt_cash_paid.text()} WHERE custmer_id={customer_id}"
+            )
+        # cash_received_previous_id = self.db.conn.execute(
+        #     f'SELECT id FROM customer_cash_received WHERE '
     def update_roznamcha(self):
         db=DBHandler()
         prodcut_id = self.get_product_id(db,self.select_product.currentText())
@@ -105,15 +122,6 @@ class UpdateNamchaWindow(QMainWindow, FORM_MAIN):
         if prodcut_id != '' and customer_id != '' and date != '' and quantity != '' and rate != '' and total_amount != '' and cash_paid != '' and cash_received != '':
             db.conn.execute('INSERT INTO roznamcha (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received) VALUES (?,?,?,?,?,?,?,?)',(prodcut_id,customer_id,date,quantity,rate,total_amount,cash_paid,cash_received))
             customer_remaining = float(db.conn.execute("SELECT balance FROM customers WHERE custmer_id='{}'".format(customer_id)).fetchone()[0])
-
-            if customer_remaining>=0 and sub_total>=0:
-                customer_remaining+=sub_total
-            elif customer_remaining<0 and sub_total>=0:
-                customer_remaining=customer_remaining+sub_total
-            elif customer_remaining>=0 and sub_total<0:
-                customer_remaining=customer_remaining+sub_total
-            elif customer_remaining<0 and sub_total<0:
-                customer_remaining=customer_remaining+sub_total
 
             db.conn.execute("UPDATE customers SET balance=? WHERE custmer_id=?",(customer_remaining,customer_id))
             db.conn.execute(f"INSERT INTO customer_cash_received (customer_id,date,description,quantity,rate,amount,cash_paid,cash_received,remaining) VALUES (?,?,?,?,?,?,?,?,?)",(customer_id,date,'roznamcha',quantity,rate,total_amount,cash_paid,cash_received,customer_remaining))
