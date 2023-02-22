@@ -35,13 +35,30 @@ class RozNamchaWindow(QMainWindow, FORM_MAIN):
         self.btn_save.clicked.connect(self.add_roznamcha)
         self.btn_clear.clicked.connect(self.clear_fields)
         self.btn_cancel.clicked.connect(self.close)
+        self.txt_quantity.textChanged.connect(self.add_seprator)
 
+    def add_seprator(self):
+        try:
+            quantity = self.txt_quantity.text()
+            if not float(quantity):
+                raise Exception('Quantity')
+        except Exception as e:
+            QMessageBox.warning(self, 'Error', 'Please enter valid quantity')
+            # self.txt_quantity.setText('')
+            self.txt_quantity.setFocus()
+            return
 
     def calculate_total_amount(self):
-        quantity = int(self.txt_quantity.text())
-        rate = int(self.txt_rate.text())
-        total_amount = quantity * rate
-        self.txt_total_amount.setText(str(total_amount))
+        try:
+            quantity = float(self.txt_quantity.text())
+            rate = float(self.txt_rate.text())
+            total_amount = quantity * rate
+            self.txt_total_amount.setText(str(total_amount))
+        except Exception as e:
+            QMessageBox.warning(self, 'Error', 'Please enter valid {}'.format(e))
+            self.txt_total_amount.setText('')
+            self.txt_rate.setFocus()
+            return
 
     def get_product_id(self,db,product_name):
         return db.conn.execute("SELECT product_id FROM products WHERE product_name='{}'".format(product_name)).fetchone()[0]

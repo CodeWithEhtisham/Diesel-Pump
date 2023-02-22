@@ -511,26 +511,64 @@ class MainWindow(QMainWindow, FORM_MAIN):
 
     def update_report_table(self):
         db=DBHandler()
-        self.total_stock_amount.setText(
-            str(db.conn.execute("SELECT SUM(amount) FROM stock").fetchone()[0])
-        )
-        self.total_payable.setText(
-            str(db.conn.execute("SELECT SUM(balance) FROM customers").fetchone()[0])
-        )
-        self.total_receivable.setText(
-            str(db.conn.execute("SELECT SUM(balance) FROM suppliers").fetchone()[0])
-        )
-        self.total_sales.setText(
-            str(db.conn.execute("SELECT SUM(sub_total) FROM sales").fetchone()[0])
-        )
-        self.total_stock_purchase.setText(
-            str(db.conn.execute("SELECT SUM(amount) FROM stock").fetchone()[0])
-        )
-        self.total_expenses.setText(
-            str(db.conn.execute("SELECT SUM(amount) FROM expenses").fetchone()[0])
-        )
+        total_stoack_amount=db.conn.execute("SELECT SUM(amount) FROM stock").fetchone()[0]
+        if not total_stoack_amount:
+            # total_stoack_amount=total_stoack_amount[0]
+            total_stoack_amount=0
+        # else:
+        self.total_stock_amount.setText(str(total_stoack_amount))
+        
+        total_apyable=db.conn.execute("SELECT SUM(balance) FROM customers").fetchone()[0]
+        if not total_apyable:
+            # total_apyable=total_apyable[0]
+            total_apyable=0
+        # else:
+        self.total_payable.setText("0")
+        
+        total_receivable=db.conn.execute("SELECT SUM(balance) FROM suppliers").fetchone()[0]
+        if not total_receivable:
+            # total_receivable=total_receivable[0]
+            total_receivable=0
+        # else:
+        self.total_receivable.setText(str(total_receivable))
+        
+        total_sales=db.conn.execute("SELECT SUM(sub_total) FROM sales").fetchone()[0]
+        if not total_sales:
+            # total_sales=total_sales[0]
+            total_sales=0
+        # else:
+        self.total_sales.setText(str(total_sales))
+
+        total_purchase=db.conn.execute("SELECT SUM(amount) FROM stock").fetchone()[0]
+        if not total_purchase:
+            # total_purchase=total_purchase[0]
+            total_purchase=0
+        # else:
+        self.total_stock_purchase.setText(str(total_purchase))
+        
+        total_expenses=db.conn.execute("SELECT SUM(amount) FROM expenses").fetchone()[0]
+        if not total_expenses:
+            # total_expenses=total_expenses[0]
+            total_expenses=0
+        # else:
+        self.total_expenses.setText(str(total_expenses))
+        
+        total_amount=db.conn.execute("SELECT SUM(total_amount) FROM sales").fetchone()[0]
+        if not total_amount:
+            # total_amount=total_amount[0]
+            total_amount=0
+        # else:
+            
+        total_expenses=db.conn.execute("SELECT SUM(amount) FROM expenses").fetchone()[0]
+        print(total_amount,total_expenses)
+        if not total_expenses:
+            total_expenses=0
+            # total_expenses=total_expenses[0]
+        # else:
+        print(total_amount,total_expenses)
+        total_profit=total_amount-total_expenses
         self.net_balance.setText(
-            str(db.conn.execute("SELECT SUM(total_amount) FROM sales").fetchone()[0]-db.conn.execute("SELECT SUM(amount) FROM expenses").fetchone()[0])
+            str(total_profit)
         )
 
     

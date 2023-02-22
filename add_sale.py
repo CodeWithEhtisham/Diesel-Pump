@@ -45,7 +45,7 @@ class SalesWindow(QMainWindow, FORM_MAIN):
             price= self.txt_rate.text()
             quantity= self.txt_quantity.text().replace(",","")
             if price and quantity:
-                total= float(price)*int(quantity)
+                total= float(price)*float(quantity)
                 self.txt_total_amount.setText(str(total))
         except Exception as e:
             QMessageBox.warning(self, 'Error', 'Please enter valid {}'.format(e))
@@ -136,11 +136,23 @@ class SalesWindow(QMainWindow, FORM_MAIN):
         try:
             quantity= self.txt_quantity.text()
             if quantity:
-                self.txt_quantity.setText("{:,}".format(int(quantity.replace(",",""))))
+                # check quantity is gettting any alphabet
+                if not float(quantity):
+                    QMessageBox.warning(self, "Warning", "Please enter a valid number")
+                    self.txt_quantity.setText('')
+                    return
         except Exception as e:
             QMessageBox.warning(self, "Warning", "Please enter a valid number")
             self.txt_quantity.setText('')
             return
+        #     quantity= self.txt_quantity.text()
+        #     if quantity:
+        #         # self.txt_quantity.setText("{:,}".format(int(quantity.replace(",",""))))
+        #         self.txt_quantity.setText("{:,}".format(float(quantity.replace(",",""))))
+        # except Exception as e:
+        #     QMessageBox.warning(self, "Warning", "Please enter a valid number")
+        #     self.txt_quantity.setText('')
+        #     return
     
     def add_sale(self):
         db= DBHandler()
@@ -149,7 +161,7 @@ class SalesWindow(QMainWindow, FORM_MAIN):
         customer_name= self.select_customer.currentText()
         customer_id= db.select('customers', 'custmer_id', f"name='{customer_name}'")[0][0]
         date= self.txt_sale_date.text()
-        quantity= int(self.txt_quantity.text().replace(",",""))
+        quantity= float(self.txt_quantity.text().replace(",",""))
         rate= float(self.txt_rate.text().replace(",",""))
         total_amount= float(self.txt_total_amount.text().replace(",",""))
         cash_paid= float(self.txt_cash_paid.text().replace(",",""))
