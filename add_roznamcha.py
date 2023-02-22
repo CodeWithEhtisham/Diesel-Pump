@@ -107,7 +107,6 @@ class RozNamchaWindow(QMainWindow, FORM_MAIN):
 
 
         if prodcut_id != '' and customer_id != '' and date != '' and quantity != '' and rate != '' and total_amount != '' and cash_paid != '' and cash_received != '':
-            db.conn.execute('INSERT INTO roznamcha (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received,description) VALUES (?,?,?,?,?,?,?,?,?)',(prodcut_id,customer_id,date,quantity,rate,total_amount,cash_paid,cash_received,description))
             db.conn.execute("UPDATE products SET product_stock=product_stock-? WHERE product_id=?",(quantity,prodcut_id))
             customer_remaining = float(db.conn.execute("SELECT balance FROM customers WHERE custmer_id='{}'".format(customer_id)).fetchone()[0])
 
@@ -122,6 +121,9 @@ class RozNamchaWindow(QMainWindow, FORM_MAIN):
 
             db.conn.execute("UPDATE customers SET balance=? WHERE custmer_id=?",(customer_remaining,customer_id))
             db.conn.execute(f"INSERT INTO customer_cash_received (customer_id,date,description,quantity,rate,amount,cash_paid,cash_received,remaining) VALUES (?,?,?,?,?,?,?,?,?)",(customer_id,date,'roznamcha',quantity,rate,total_amount,cash_paid,cash_received,customer_remaining))
+            db.conn.commit()
+            last_customer_cash_received_id = db.conn.execute("SELECT MAX(cash_received_id) FROM customer_cash_received").fetchone()[0]
+            db.conn.execute('INSERT INTO roznamcha (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received,description,transaction_id) VALUES (?,?,?,?,?,?,?,?,?,?)',(prodcut_id,customer_id,date,quantity,rate,total_amount,cash_paid,cash_received,description,last_customer_cash_received_id))
             db.conn.commit()
             QMessageBox.information(self,'Success','Roznamcha Added Successfully')
             db.close()

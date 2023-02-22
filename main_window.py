@@ -103,7 +103,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.btn_expense_type.clicked.connect(self.open_expense_type_window)
 
         self.btn_edit_expense.clicked.connect(self.edit_expense)
-        # self.btn_edit_rn.clicked.connect(self.edit_roznamcha)
+        self.btn_edit_rn.clicked.connect(self.edit_roznamcha)
         self.btn_edit_customer.clicked.connect(self.edit_customer)
         self.btn_edit_supplier.clicked.connect(self.edit_supplier)
 
