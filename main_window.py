@@ -516,7 +516,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
             # total_stoack_amount=total_stoack_amount[0]
             total_stoack_amount=0
         # else:
-        self.total_stock_amount.setText(str(total_stoack_amount))
+        self.total_stock_amount.setText(str(f"{total_stoack_amount:,}"))
         
         total_apyable=db.conn.execute("SELECT SUM(balance) FROM customers").fetchone()[0]
         if not total_apyable:
@@ -530,28 +530,28 @@ class MainWindow(QMainWindow, FORM_MAIN):
             # total_receivable=total_receivable[0]
             total_receivable=0
         # else:
-        self.total_receivable.setText(str(total_receivable))
+        self.total_receivable.setText(str(f"{total_receivable:,}"))
         
         total_sales=db.conn.execute("SELECT SUM(sub_total) FROM sales").fetchone()[0]
         if not total_sales:
             # total_sales=total_sales[0]
             total_sales=0
         # else:
-        self.total_sales.setText(str(total_sales))
+        self.total_sales.setText(str(f"{total_sales:,}"))
 
         total_purchase=db.conn.execute("SELECT SUM(amount) FROM stock").fetchone()[0]
         if not total_purchase:
             # total_purchase=total_purchase[0]
             total_purchase=0
         # else:
-        self.total_stock_purchase.setText(str(total_purchase))
+        self.total_stock_purchase.setText(str(f"{total_purchase:,}"))
         
         total_expenses=db.conn.execute("SELECT SUM(amount) FROM expenses").fetchone()[0]
         if not total_expenses:
             # total_expenses=total_expenses[0]
             total_expenses=0
         # else:
-        self.total_expenses.setText(str(total_expenses))
+        self.total_expenses.setText(str(f"{total_expenses:,}"))
         
         total_amount=db.conn.execute("SELECT SUM(total_amount) FROM sales").fetchone()[0]
         if not total_amount:
@@ -568,7 +568,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
         print(total_amount,total_expenses)
         total_profit=total_amount-total_expenses
         self.net_balance.setText(
-            str(total_profit)
+            str(f"{total_profit:,}")
         )
 
     

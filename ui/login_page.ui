@@ -369,7 +369,7 @@ QTextEdit {
           </font>
          </property>
          <property name="text">
-          <string>Software Developed: ENS Soft Tech</string>
+          <string>Powered By: ComPy Softwares Quetta</string>
          </property>
         </widget>
        </item>
