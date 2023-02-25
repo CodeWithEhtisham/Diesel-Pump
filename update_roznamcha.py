@@ -90,12 +90,14 @@ class UpdateNamchaWindow(QMainWindow, FORM_MAIN):
     def delete_roznamcha(self):
         product_id = self.get_product_id(self.db,self.select_product.currentText())
         customer_id = self.get_customer_id(self.db,self.select_customer.currentText())
+        transaction_id=self.db.conn.execute(f"SELECT transaction_id FROM roznamcha WHERE roznamcha_id={self.id}").fetchone()[0]
         self.db.conn.execute(
-            f"UPDATE products SET quantity=quantity+{self.txt_quantity.text()} WHERE product_id={product_id}"
+            f"UPDATE products SET product_stock=product_stock+{self.txt_quantity.text()} WHERE product_id={product_id}"
         )
         customer_balance = self.db.conn.execute(
             f"SELECT balance FROM customers WHERE custmer_id={customer_id}"
         ).fetchone()[0]
+        customer_balance = float(customer_balance)
         if customer_balance>0:
             self.db.conn.execute(
                 f"UPDATE customers SET balance=balance-{self.txt_cash_received.text()} WHERE custmer_id={customer_id}"
@@ -104,8 +106,31 @@ class UpdateNamchaWindow(QMainWindow, FORM_MAIN):
             self.db.conn.execute(
                 f"UPDATE customers SET balance=balance+{self.txt_cash_paid.text()} WHERE custmer_id={customer_id}"
             )
-        # cash_received_previous_id = self.db.conn.execute(
-        #     f'SELECT id FROM customer_cash_received WHERE '
+        
+        before_transaction_balace = self.db.conn.execute(
+            f"SELECT remaining from customer_cash_received WHERE customer_id={customer_id} and id<={transaction_id} ORDER BY id DESC LIMIT 1").fetchone()[0]
+        after_transaction_record = self.db.conn.execute(
+            f"SELECT * from customer_cash_received WHERE customer_id={customer_id} and id>{transaction_id} ORDER BY id ASC ").fetchall()
+        if after_transaction_record:
+            for record in after_transaction_record:
+                id = record[0]
+                total_amount=float(record[-2])
+                cash_paid_record=float(record[-1])
+                received_record=float(record[4])
+                self.db.conn.execute(
+                    f"UPDATE customer_cash_received SET remaining={before_transaction_balace+total_amount+cash_paid_record-received_record} WHERE id={id}"
+                )
+        self.db.conn.execute(
+            f"DELETE FROM customer_cash_received WHERE id={transaction_id}"
+        )
+        self.db.conn.execute(
+            f"DELETE FROM roznamcha WHERE roznamcha_id={self.id}"
+        )
+        self.db.conn.commit()
+        self.close()
+        
+
+
     def update_roznamcha(self):
         db=DBHandler()
         prodcut_id = self.get_product_id(db,self.select_product.currentText())

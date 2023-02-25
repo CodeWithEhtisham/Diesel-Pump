@@ -122,7 +122,7 @@ class RozNamchaWindow(QMainWindow, FORM_MAIN):
             db.conn.execute("UPDATE customers SET balance=? WHERE custmer_id=?",(customer_remaining,customer_id))
             db.conn.execute(f"INSERT INTO customer_cash_received (customer_id,date,description,quantity,rate,amount,cash_paid,cash_received,remaining) VALUES (?,?,?,?,?,?,?,?,?)",(customer_id,date,'roznamcha',quantity,rate,total_amount,cash_paid,cash_received,customer_remaining))
             db.conn.commit()
-            last_customer_cash_received_id = db.conn.execute("SELECT MAX(cash_received_id) FROM customer_cash_received").fetchone()[0]
+            last_customer_cash_received_id = db.conn.execute("SELECT MAX(id) FROM customer_cash_received").fetchone()[0]
             db.conn.execute('INSERT INTO roznamcha (product_id, customer_id, date, quantity, rate, total_amount, cash_paid, cash_received,description,transaction_id) VALUES (?,?,?,?,?,?,?,?,?,?)',(prodcut_id,customer_id,date,quantity,rate,total_amount,cash_paid,cash_received,description,last_customer_cash_received_id))
             db.conn.commit()
             QMessageBox.information(self,'Success','Roznamcha Added Successfully')
