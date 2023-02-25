@@ -61,9 +61,13 @@ class RozNamchaWindow(QMainWindow, FORM_MAIN):
             return
 
     def get_product_id(self,db,product_name):
+        if product_name=="Select Product":
+            return
         return db.conn.execute("SELECT product_id FROM products WHERE product_name='{}'".format(product_name)).fetchone()[0]
     
     def get_customer_id(self,db,customer_name):
+        if customer_name=="Select Customer":
+            return
         return db.conn.execute("SELECT custmer_id FROM customers WHERE name='{}'".format(customer_name)).fetchone()[0]
 
 
@@ -88,6 +92,9 @@ class RozNamchaWindow(QMainWindow, FORM_MAIN):
         db=DBHandler()
         prodcut_id = self.get_product_id(db,self.select_product.currentText())
         customer_id = self.get_customer_id(db,self.select_customer.currentText())
+        if not prodcut_id or not customer_id:
+            QMessageBox.warning(self,'Error','Please select product and customer')
+            return
         date = self.txt_date.text()
         quantity = float(self.txt_quantity.text())
         rate = float(self.txt_rate.text())

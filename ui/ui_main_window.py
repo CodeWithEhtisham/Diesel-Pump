@@ -1049,7 +1049,7 @@ class Ui_MainWindow(object):
         self.customer_table.setSortingEnabled(True)
         self.customer_table.setCornerButtonEnabled(True)
         self.customer_table.setRowCount(20)
-        self.customer_table.horizontalHeader().setVisible(False)
+        self.customer_table.horizontalHeader().setVisible(True)
         self.customer_table.horizontalHeader().setCascadingSectionResizes(True)
         self.customer_table.horizontalHeader().setDefaultSectionSize(150)
         self.customer_table.horizontalHeader().setProperty("showSortIndicator", True)
@@ -1326,7 +1326,7 @@ class Ui_MainWindow(object):
         self.roznamcha_table.setSortingEnabled(True)
         self.roznamcha_table.setCornerButtonEnabled(True)
         self.roznamcha_table.setRowCount(20)
-        self.roznamcha_table.horizontalHeader().setVisible(False)
+        self.roznamcha_table.horizontalHeader().setVisible(True)
         self.roznamcha_table.horizontalHeader().setCascadingSectionResizes(False)
         self.roznamcha_table.horizontalHeader().setMinimumSectionSize(30)
         self.roznamcha_table.horizontalHeader().setDefaultSectionSize(150)
@@ -1563,7 +1563,7 @@ class Ui_MainWindow(object):
         self.supplier_table.setSortingEnabled(True)
         self.supplier_table.setCornerButtonEnabled(True)
         self.supplier_table.setRowCount(20)
-        self.supplier_table.horizontalHeader().setVisible(False)
+        self.supplier_table.horizontalHeader().setVisible(True)
         self.supplier_table.horizontalHeader().setCascadingSectionResizes(True)
         self.supplier_table.horizontalHeader().setDefaultSectionSize(150)
         self.supplier_table.horizontalHeader().setProperty("showSortIndicator", True)
@@ -2270,14 +2270,14 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(5)
+        self.stackedWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"SAM & SHAMI", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"ComPy Softwares", None))
         self.btn_home.setText(QCoreApplication.translate("MainWindow", u"Home", None))
         self.btn_product.setText(QCoreApplication.translate("MainWindow", u"Product", None))
         self.btn_sales.setText(QCoreApplication.translate("MainWindow", u"Sales", None))
@@ -2294,7 +2294,7 @@ class Ui_MainWindow(object):
         self.lbl_business_address.setText(QCoreApplication.translate("MainWindow", u"Business Address", None))
         self.lbl_contact.setText(QCoreApplication.translate("MainWindow", u"+92 335 2321360", None))
         self.lbl_description.setText(QCoreApplication.translate("MainWindow", u"Software Developed By:", None))
-        self.lbl_company.setText(QCoreApplication.translate("MainWindow", u"SAM & SHAMI Coding Hub", None))
+        self.lbl_company.setText(QCoreApplication.translate("MainWindow", u"ComPy Softwares Quetta", None))
         self.lbl_product.setText(QCoreApplication.translate("MainWindow", u"Product", None))
         self.btn_add_product.setText(QCoreApplication.translate("MainWindow", u"Add Product", None))
         self.btn_add_stock.setText(QCoreApplication.translate("MainWindow", u"Add Stock", None))
