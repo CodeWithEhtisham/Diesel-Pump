@@ -88,46 +88,60 @@ class UpdateNamchaWindow(QMainWindow, FORM_MAIN):
             return cash
 
     def delete_roznamcha(self):
-        product_id = self.get_product_id(self.db,self.select_product.currentText())
-        customer_id = self.get_customer_id(self.db,self.select_customer.currentText())
-        transaction_id=self.db.conn.execute(f"SELECT transaction_id FROM roznamcha WHERE roznamcha_id={self.id}").fetchone()[0]
-        self.db.conn.execute(
-            f"UPDATE products SET product_stock=product_stock+{self.txt_quantity.text()} WHERE product_id={product_id}"
-        )
-        customer_balance = self.db.conn.execute(
-            f"SELECT balance FROM customers WHERE custmer_id={customer_id}"
-        ).fetchone()[0]
-        customer_balance = float(customer_balance)
-        if customer_balance>0:
-            self.db.conn.execute(
-                f"UPDATE customers SET balance=balance-{self.txt_cash_received.text()} WHERE custmer_id={customer_id}"
-            )
-        else:
-            self.db.conn.execute(
-                f"UPDATE customers SET balance=balance+{self.txt_cash_paid.text()} WHERE custmer_id={customer_id}"
-            )
-        
-        before_transaction_balace = self.db.conn.execute(
-            f"SELECT remaining from customer_cash_received WHERE customer_id={customer_id} and id<={transaction_id} ORDER BY id DESC LIMIT 1").fetchone()[0]
-        after_transaction_record = self.db.conn.execute(
-            f"SELECT * from customer_cash_received WHERE customer_id={customer_id} and id>{transaction_id} ORDER BY id ASC ").fetchall()
-        if after_transaction_record:
-            for record in after_transaction_record:
-                id = record[0]
-                total_amount=float(record[-2])
-                cash_paid_record=float(record[-1])
-                received_record=float(record[4])
+        try:
+            # yes no box
+            ret = QMessageBox.question(self,'', "Are You sure to Delete the Entry?", QMessageBox.Yes | QMessageBox.No)
+            if ret == QMessageBox.Yes:
+                product_id = self.get_product_id(self.db,self.select_product.currentText())
+                customer_id = self.get_customer_id(self.db,self.select_customer.currentText())
+                transaction_id=self.db.conn.execute(f"SELECT transaction_id FROM roznamcha WHERE roznamcha_id={self.id}").fetchone()[0]
                 self.db.conn.execute(
-                    f"UPDATE customer_cash_received SET remaining={before_transaction_balace+total_amount+cash_paid_record-received_record} WHERE id={id}"
+                    f"UPDATE products SET product_stock=product_stock+{self.txt_quantity.text()} WHERE product_id={product_id}"
                 )
-        self.db.conn.execute(
-            f"DELETE FROM customer_cash_received WHERE id={transaction_id}"
-        )
-        self.db.conn.execute(
-            f"DELETE FROM roznamcha WHERE roznamcha_id={self.id}"
-        )
-        self.db.conn.commit()
-        self.close()
+                # customer_balance = self.db.conn.execute(
+                #     f"SELECT balance FROM customers WHERE custmer_id={customer_id}"
+                # ).fetchone()[0]
+                # customer_balance = float(customer_balance)
+                # if customer_balance>0:
+                #     self.db.conn.execute(
+                #         f"UPDATE customers SET balance=balance-{self.txt_cash_received.text()} WHERE custmer_id={customer_id}"
+                #     )
+                # else:
+                #     self.db.conn.execute(
+                #         f"UPDATE customers SET balance=balance+{self.txt_cash_paid.text()} WHERE custmer_id={customer_id}"
+                #     )
+                
+                before_transaction_balace = self.db.conn.execute(
+                    f"SELECT remaining from customer_cash_received WHERE customer_id={customer_id} and id<{transaction_id} ORDER BY id DESC LIMIT 1").fetchone()[0]
+                after_transaction_record = self.db.conn.execute(
+                    f"SELECT * from customer_cash_received WHERE customer_id={customer_id} and id>{transaction_id} ORDER BY id ASC ").fetchall()
+                if after_transaction_record:
+                    for record in after_transaction_record:
+                        print(before_transaction_balace)
+                        id = record[0]
+                        total_amount=float(record[-2])
+                        cash_paid_record=float(record[-1])
+                        received_record=float(record[4])
+                        self.db.conn.execute(
+                            f"UPDATE customer_cash_received SET remaining={before_transaction_balace+total_amount+cash_paid_record-received_record} WHERE id={id}"
+                        )
+                        before_transaction_balace = before_transaction_balace+total_amount+cash_paid_record-received_record
+                self.db.conn.execute(
+                    f"DELETE FROM customer_cash_received WHERE id={transaction_id}"
+                )
+                self.db.conn.execute(
+                    f"DELETE FROM roznamcha WHERE roznamcha_id={self.id}"
+                )
+                self.db.conn.execute(
+                    f"UPdate customers SET balance={before_transaction_balace} WHERE custmer_id={customer_id}"
+                )
+                self.db.conn.commit()
+                self.close()
+            else:
+                self.close()
+        except Exception as e:
+            QMessageBox.critical(self,'Error',str(e))
+            
         
 
 

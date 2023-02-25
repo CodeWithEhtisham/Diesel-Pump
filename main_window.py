@@ -141,6 +141,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
         id = db.select(table_name='roznamcha', columns='roznamcha_id', condition=f"date='{date}' AND quantity='{quantity}' AND rate='{rate}' AND total_amount='{total_amount}' AND cash_paid='{cash_paid}' AND cash_received='{cash_received}'")[0][0]
         self.edit_roznamcha = UpdateNamchaWindow(id)
         self.edit_roznamcha.show()
+        self.edit_roznamcha.btn_delete.clicked.connect(self.update_roznamcha_table)
     def edit_expense(self):
         db=DBHandler()
         row = self.expense_table.currentRow()
