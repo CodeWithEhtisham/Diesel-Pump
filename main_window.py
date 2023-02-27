@@ -393,7 +393,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
     def customer_search(self):
         search=self.txt_search_customer.text()
         db=DBHandler()
-        data=db.conn.execute(f"SELECT * FROM customers WHERE name LIKE '%{search}%' OR phone LIKE '%{search}%' OR address LIKE '%{search}%' OR vehicle LIKE '%{search}%' OR balance_type LIKE '%{search}%'").fetchall()
+        data=db.conn.execute(f"SELECT custmer_id,name,phone,vehicle,address,balance FROM customers WHERE name LIKE '%{search}%' OR phone LIKE '%{search}%' OR address LIKE '%{search}%' OR vehicle LIKE '%{search}%' OR balance_type LIKE '%{search}%'").fetchall()
         if data:
             self.update_customer_table(data)
         else:
