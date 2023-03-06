@@ -1045,7 +1045,7 @@ QPushButton {
                  <enum>QAbstractItemView::SelectRows</enum>
                 </property>
                 <property name="sortingEnabled">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                 <property name="rowCount">
                  <number>20</number>
@@ -1054,7 +1054,7 @@ QPushButton {
                  <number>180</number>
                 </attribute>
                 <attribute name="verticalHeaderVisible">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </attribute>
                 <attribute name="verticalHeaderCascadingSectionResizes">
                  <bool>false</bool>
@@ -1774,7 +1774,7 @@ QPushButton {
            <enum>QAbstractItemView::SelectRows</enum>
           </property>
           <property name="sortingEnabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="rowCount">
            <number>20</number>
@@ -2447,7 +2447,7 @@ QPushButton {
            <enum>Qt::SolidLine</enum>
           </property>
           <property name="sortingEnabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="cornerButtonEnabled">
            <bool>true</bool>
@@ -2468,7 +2468,7 @@ QPushButton {
            <bool>true</bool>
           </attribute>
           <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
+           <bool>true</bool>
           </attribute>
           <attribute name="verticalHeaderHighlightSections">
            <bool>true</bool>
@@ -3187,7 +3187,7 @@ QPushButton, QComboBox, QDateEdit {
            <enum>QAbstractItemView::SelectRows</enum>
           </property>
           <property name="sortingEnabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="cornerButtonEnabled">
            <bool>true</bool>
@@ -3217,7 +3217,7 @@ QPushButton, QComboBox, QDateEdit {
            <bool>false</bool>
           </attribute>
           <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
+           <bool>true</bool>
           </attribute>
           <attribute name="verticalHeaderCascadingSectionResizes">
            <bool>false</bool>
@@ -3837,7 +3837,7 @@ QPushButton {
            <enum>Qt::SolidLine</enum>
           </property>
           <property name="sortingEnabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="cornerButtonEnabled">
            <bool>true</bool>
@@ -3858,7 +3858,7 @@ QPushButton {
            <bool>true</bool>
           </attribute>
           <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
+           <bool>true</bool>
           </attribute>
           <attribute name="verticalHeaderHighlightSections">
            <bool>true</bool>

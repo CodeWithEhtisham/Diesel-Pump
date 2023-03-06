@@ -73,11 +73,11 @@ class SupplierAccountDetailsWindow(QMainWindow, FORM_MAIN):
                 self.supplier_account_table.setItem(row_number,column_number,QTableWidgetItem(str(valuess)))
                 # self.supplier_account_table.item(row_number,column_number).setForeground(QBrush(QColor(0, 255, 0)))
             self.supplier_account_table.item(row_number,5).setForeground(QColor(255,0,0))
-        self.txt_total_cash_paid.setText(str(cash_paid))
-        self.txt_remaining.setText(str(remaining))
-        self.label_6.setText(str(amount))
+        self.txt_total_cash_paid.setText(str(f"{cash_paid:,}"))
+        self.txt_remaining.setText(str(f"{remaining:,}"))
+        self.label_6.setText(str(f"{amount:,}"))
         self.label_2.setText(str(quantity))
-        self.label_4.setText(str(opening))
+        self.label_4.setText(str(f"{opening:,}"))
 
     def cash_paids(self):
         self.cash_paid_window=CashPaidWindow(self.user_id)

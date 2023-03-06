@@ -28,6 +28,8 @@ class AccountDetailsWindow(QMainWindow, FORM_MAIN):
         self.db= DBHandler()
         self.lbl_account_name.setText(self.db.select(table_name="customers",columns="name",condition="custmer_id="+str(self.user_id))[0][0])
         self.txt_search_date.setDate(datetime.date.today())
+        
+        self.roznamcha_table.setColumnWidth(1,200);
 
     def Handle_Buttons(self):
         self.btn_cash_received.clicked.connect(self.openCashReceivedWindow)
@@ -68,11 +70,11 @@ class AccountDetailsWindow(QMainWindow, FORM_MAIN):
             self.roznamcha_table.item(index,6).setForeground(QColor(255,0,0))
 
         self.label_2.setText(str(quantity))
-        self.label_6.setText(str(amount))
-        self.txt_total_cash_paid.setText(str(cash_paid))
-        self.txt_total_cash_received.setText(str(cash_received))
-        self.txt_remaining.setText(str(remaining))
-        self.label_4.setText(str(opening))
+        self.label_6.setText(str(f"{amount:,}"))
+        self.txt_total_cash_paid.setText(str(f"{cash_paid:,}"))
+        self.txt_total_cash_received.setText(str(f"{cash_received:,}"))
+        self.txt_remaining.setText(str(f"{remaining:,}"))
+        self.label_4.setText(str(f"{opening:,}"))
 
     def search_by_date(self):
         date=self.txt_search_date.date().toString("dd/MM/yyyy")
@@ -106,11 +108,11 @@ class AccountDetailsWindow(QMainWindow, FORM_MAIN):
             self.roznamcha_table.item(index,6).setForeground(QColor(255,0,0))
 
         self.label_2.setText(str(quantity))
-        self.label_6.setText(str(amount))
-        self.txt_total_cash_paid.setText(str(cash_paid))
-        self.txt_total_cash_received.setText(str(cash_received))
-        self.txt_remaining.setText(str(remaining))
-        self.label_4.setText(str(opening))
+        self.label_6.setText(str(f"{amount:,}"))
+        self.txt_total_cash_paid.setText(str(f"{cash_paid:,}"))
+        self.txt_total_cash_received.setText(str(f"{cash_received:,}"))
+        self.txt_remaining.setText(str(f"{remaining:,}"))
+        self.label_4.setText(str(f"{opening:,}"))
 
 
     def openCashReceivedWindow(self):
@@ -147,11 +149,11 @@ class AccountDetailsWindow(QMainWindow, FORM_MAIN):
             self.roznamcha_table.item(index,6).setForeground(QColor(255,0,0))
     
         self.label_2.setText(str(quantity))
-        self.label_6.setText(str(amount))
-        self.txt_total_cash_paid.setText(str(cash_paid))
-        self.txt_total_cash_received.setText(str(cash_received))
-        self.txt_remaining.setText(str(remaining))
-        self.label_4.setText(str(opening))
+        self.label_6.setText(str(f"{amount:,}"))
+        self.txt_total_cash_paid.setText(str(f"{cash_paid:,}"))
+        self.txt_total_cash_received.setText(str(f"{cash_received:,}"))
+        self.txt_remaining.setText(str(f"{remaining:,}"))
+        self.label_4.setText(str(f"{opening:,}"))
 
         # balace = db.conn.execute(f"SELECT balance FROM customers WHERE custmer_id = {self.user_id}").fetchone()[0]
         # self.label_4.setText(str(balace))

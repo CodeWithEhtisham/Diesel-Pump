@@ -39,6 +39,12 @@ class MainWindow(QMainWindow, FORM_MAIN):
         self.update()
         # home page show when window open on load
         self.Handle_Buttons()
+        
+        self.customer_table.setColumnWidth(0,120)
+        self.customer_table.setColumnWidth(1,250)
+        
+        self.supplier_table.setColumnWidth(0,100)
+        self.supplier_table.setColumnWidth(1,250)
 
     def Handle_Buttons(self):
         self.txt_date_from_sale.setDate(QDate.currentDate())
@@ -214,7 +220,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
                 for column, item in enumerate(form):
                     self.expense_table.setItem(
                         row, column, QTableWidgetItem(str(item)))
-            self.total_expense.setText(str(amount))
+            self.total_expense.setText(str(f"{amount:,}"))
         else:
             self.expense_table.setRowCount(0)
             self.total_expense.setText('0')
@@ -231,8 +237,8 @@ class MainWindow(QMainWindow, FORM_MAIN):
                 for idx,i in enumerate(row):
                     self.supplier_table.setItem(index,idx,QTableWidgetItem(str(i)))
             self.txt_total_supplier.setText(str(len(data)))
-            self.txt_supplier_total_rem_balance.setText(
-                str(sum([float(i[-1]) for i in data])))
+            total_amount = sum([float(i[-1]) for i in data])
+            self.txt_supplier_total_rem_balance.setText(str(f"{total_amount:,}"))
         else:
             self.supplier_table.setRowCount(0)
             self.txt_total_supplier.setText('0')
@@ -316,8 +322,8 @@ class MainWindow(QMainWindow, FORM_MAIN):
                 for idx, i in enumerate(row):
                     self.roznamcha_table.setItem(
                         index, idx, QTableWidgetItem(str(i)))
-            self.txt_total_cash_in.setText(str(cash_received))
-            self.txt_total_cash_out.setText(str(cash_paid))
+            self.txt_total_cash_in.setText(str(f"{cash_received:,}"))
+            self.txt_total_cash_out.setText(str(f"{cash_paid:,}"))
         else:
             self.roznamcha_table.setRowCount(0)
             self.txt_total_cash_in.setText('0')
@@ -375,9 +381,9 @@ class MainWindow(QMainWindow, FORM_MAIN):
                 for idx, i in enumerate(row):
                     self.sales_table.setItem(index, idx, QTableWidgetItem(str(i)))
 
-            self.txt_total_sales.setText(str(total))
-            self.txt_total_cash_paid.setText(str(cash_paid))
-            self.txt_total_cash_received.setText(str(cash_received))
+            self.txt_total_sales.setText(str(f"{total:,}"))
+            self.txt_total_cash_paid.setText(str(f"{cash_paid:,}"))
+            self.txt_total_cash_received.setText(str(f"{cash_received:,}"))
         else:
             self.sales_table.setRowCount(0)
             self.txt_total_sales.setText("0")
@@ -420,7 +426,8 @@ class MainWindow(QMainWindow, FORM_MAIN):
                     self.customer_table.setItem(
                         index, idx, QTableWidgetItem(str(i)))
             self.txt_total_customers.setText(str(len(data)))
-            self.txt_total_rem_balance.setText(str(sum(balance)))
+            total_balance = sum(balance)
+            self.txt_total_rem_balance.setText(str(f"{total_balance:,}"))
         else:
             self.customer_table.setRowCount(0)
             self.txt_total_customers.setText("0")
@@ -526,14 +533,15 @@ class MainWindow(QMainWindow, FORM_MAIN):
         # # else:
         # self.total_stock_amount.setText(str(f"{total_stoack_amount:,}"))
         
-        total_apyable=db.conn.execute("SELECT SUM(balance) FROM customers").fetchone()[0]
-        if not total_apyable:
+        total_payable = db.conn.execute(
+            "SELECT SUM(balance) FROM suppliers").fetchone()[0]
+        if not total_payable:
             # total_apyable=total_apyable[0]
-            total_apyable=0
+            total_payable=0
         # else:
-        self.total_payable.setText("0")
+        self.total_payable.setText(str(f"{total_payable:,}"))
         
-        total_receivable=db.conn.execute("SELECT SUM(balance) FROM suppliers").fetchone()[0]
+        total_receivable=db.conn.execute("SELECT SUM(balance) FROM customers").fetchone()[0]
         if not total_receivable:
             # total_receivable=total_receivable[0]
             total_receivable=0
@@ -574,7 +582,11 @@ class MainWindow(QMainWindow, FORM_MAIN):
             # total_expenses=total_expenses[0]
         # else:
         # print(total_amount,total_expenses)
-        total_profit=total_amount-total_expenses
+        
+        # CALCULATION
+        total_balance = stock_amount + total_receivable
+        total = total_balance + (total_payable)
+        total_profit= total -total_expenses
         self.net_balance.setText(
             str(f"{total_profit:,}")
         )
