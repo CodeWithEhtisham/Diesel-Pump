@@ -512,12 +512,19 @@ class MainWindow(QMainWindow, FORM_MAIN):
 
     def update_report_table(self):
         db=DBHandler()
-        total_stoack_amount=db.conn.execute("SELECT SUM(amount) FROM stock").fetchone()[0]
-        if not total_stoack_amount:
-            # total_stoack_amount=total_stoack_amount[0]
-            total_stoack_amount=0
-        # else:
-        self.total_stock_amount.setText(str(f"{total_stoack_amount:,}"))
+        product_list=db.conn.execute("SELECT product_name,product_stock FROM products").fetchall()
+        stock_amount=0
+        for name,stock in product_list:
+            amount=db.conn.execute(f"SELECT rate FROM stock WHERE product_id=(SELECT product_id FROM products WHERE product_name='{name}') ORDER BY stock_id DESC LIMIT 1").fetchone()[0]
+            stock_amount+=amount*stock
+        self.total_stock_amount.setText(str(f"{stock_amount:,}"))
+        
+        # total_stoack_amount=db.conn.execute("SELECT SUM(amount) FROM stock").fetchone()[0]
+        # if not total_stoack_amount:
+        #     # total_stoack_amount=total_stoack_amount[0]
+        #     total_stoack_amount=0
+        # # else:
+        # self.total_stock_amount.setText(str(f"{total_stoack_amount:,}"))
         
         total_apyable=db.conn.execute("SELECT SUM(balance) FROM customers").fetchone()[0]
         if not total_apyable:
@@ -561,12 +568,12 @@ class MainWindow(QMainWindow, FORM_MAIN):
         # else:
             
         total_expenses=db.conn.execute("SELECT SUM(amount) FROM expenses").fetchone()[0]
-        print(total_amount,total_expenses)
+        # print(total_amount,total_expenses)
         if not total_expenses:
             total_expenses=0
             # total_expenses=total_expenses[0]
         # else:
-        print(total_amount,total_expenses)
+        # print(total_amount,total_expenses)
         total_profit=total_amount-total_expenses
         self.net_balance.setText(
             str(f"{total_profit:,}")
