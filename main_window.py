@@ -476,7 +476,7 @@ class MainWindow(QMainWindow, FORM_MAIN):
                 data=db.conn.execute(f"SELECT AVG(rate) FROM stock WHERE date BETWEEN '{previous_date}' AND '{current_date}'").fetchone()[0]
             else:
                 data=db.conn.execute(f"SELECT AVG(rate) FROM stock WHERE date BETWEEN '{previous_date}' AND '{current_date}' AND product_id={option}").fetchone()[0]
-            self.txt_average_price.setText(str(data))
+            self.txt_average_price.setText(str(round(data,2)))
         else:
             self.stock_table.setRowCount(0)
             self.txt_average_price.setText("0")
